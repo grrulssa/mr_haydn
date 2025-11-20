@@ -1,70 +1,99 @@
-# Getting Started with Create React App
+# 🚗 회사 차량 대여 시스템
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+회사 직원들을 위한 차량 대여 관리 웹 애플리케이션입니다.
 
-## Available Scripts
+## 📋 프로젝트 개요
 
-In the project directory, you can run:
+관리자가 대여 기간을 설정하고, 직원들이 차량을 신청하며, 실시간으로 경쟁률을 확인할 수 있는 시스템입니다.
 
-### `npm start`
+### 대여 가능 차량
+- 🏎️ 포르쉐 타이칸 4S
+- 🚗 벤츠 EQS 450+
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### 대여 시간대
+주당 2회로 구분하여 운영됩니다:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+1. **1회차**: 월요일 오후 6시 ~ 목요일 오후 6시 (시간 엄수)
+2. **2회차**: 금요일 오전 10시 ~ 월요일 오전 10시 (시간 엄수)
 
-### `npm test`
+## 🚀 시작하기
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 설치
 
-### `npm run build`
+```bash
+cd car-rental-system
+npm install
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 개발 서버 실행
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+npm start
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+브라우저에서 [http://localhost:8080](http://localhost:8080)으로 접속하면 애플리케이션을 확인할 수 있습니다.
 
-### `npm run eject`
+> 포트는 `.env` 파일에서 `PORT=8080`으로 설정되어 있습니다.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 빌드
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+npm run build
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## ✨ 주요 기능
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### 1. 관리자 페이지 🔐
+- 대여 시작 날짜와 종료 날짜 설정
+- 설정된 기간 확인
+- 해당 기간의 달력이 자동으로 생성됨
 
-## Learn More
+### 2. 신청하기 페이지 📝
+- **한글 이름** 입력
+- **영어 아이디** 입력
+- **차량 선택** (포르쉐 타이칸 4S, 벤츠 EQS 450+)
+- **주차 선택** (관리자가 설정한 기간 내의 주차)
+- **회차 선택** (1회차 또는 2회차)
+- 중복 신청 방지 기능
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### 3. 달력 보기 페이지 📅
+- 주차별로 구분된 달력 뷰
+- 각 차량별, 회차별 신청자 목록 표시
+- **경쟁률 실시간 표시** (예: 3:1)
+- 신청자 정보 (한글 이름, 영어 아이디)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 4. 데이터 저장
+- 로컬 스토리지를 이용한 데이터 영구 저장
+- 새로고침해도 데이터 유지
 
-### Code Splitting
+## 🎯 사용 흐름
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+1. **관리자**: "관리자" 버튼 클릭 → 시작/종료 날짜 설정
+2. **사용자**: "신청하기" 버튼 클릭 → 정보 입력 및 차량/날짜 선택
+3. **확인**: "달력 보기" 버튼 클릭 → 신청 현황 및 경쟁률 확인
 
-### Analyzing the Bundle Size
+## 🎨 기술 스택
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- React 18
+- CSS3 (그라디언트 및 애니메이션)
+- Local Storage (데이터 영구 저장)
 
-### Making a Progressive Web App
+## 📱 반응형 디자인
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+모바일, 태블릿, 데스크톱 모든 화면 크기에 최적화되어 있습니다.
 
-### Advanced Configuration
+## 🔒 주요 규칙
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- 관리자가 먼저 대여 기간을 설정해야 함
+- 각 사용자는 동일한 차량/회차에 한 번만 신청 가능
+- 시간 엄수 필수
+- 경쟁률이 1:1 이상이면 추첨 필요
 
-### Deployment
+## 📄 라이선스
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+MIT License
 
-### `npm run build` fails to minify
+## 👤 개발자
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+회사 차량 관리팀
+
