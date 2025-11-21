@@ -1,3 +1,17 @@
+/* 카카오모빌리티 브랜드 컬러 시스템 */
+:root {
+  --kakao-primary: #FF5722;
+  --kakao-primary-dark: #E64A19;
+  --kakao-secondary: #FFC107;
+  --kakao-dark: #1A1A1A;
+  --kakao-gray: #757575;
+  --kakao-light: #F5F5F5;
+  --kakao-success: #4CAF50;
+  --kakao-white: #FFFFFF;
+  --kakao-gradient: linear-gradient(135deg, #FF5722 0%, #FF9800 100%);
+  --kakao-gradient-soft: linear-gradient(135deg, rgba(255, 87, 34, 0.1) 0%, rgba(255, 152, 0, 0.1) 100%);
+}
+
 .car-rental-container {
   max-width: 1400px;
   margin: 0 auto;
@@ -5,23 +19,59 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
+  background: var(--kakao-light);
 }
 
-/* Header */
+/* Header - 카카오모빌리티 스타일 */
 .header {
-  text-align: center;
   margin-bottom: 30px;
   padding: 30px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--kakao-gradient);
   color: white;
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(255, 87, 34, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.header h1 {
-  margin: 0 0 20px 0;
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  justify-content: center;
+}
+
+.kakao-logo {
+  font-size: 3em;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.header-text {
+  text-align: center;
+}
+
+.header-text h1 {
+  margin: 0;
   font-size: 2.5em;
   font-weight: 700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.header-subtitle {
+  margin: 5px 0 0 0;
+  font-size: 1.2em;
+  font-weight: 500;
+  opacity: 0.95;
 }
 
 .nav-buttons {
@@ -35,23 +85,26 @@
   padding: 12px 30px;
   background: rgba(255, 255, 255, 0.2);
   color: white;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 25px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 30px;
   font-size: 1.1em;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
 }
 
 .nav-btn:hover {
   background: rgba(255, 255, 255, 0.3);
   transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .nav-btn.active {
   background: white;
-  color: #667eea;
+  color: var(--kakao-primary);
   border-color: white;
+  box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
 }
 
 /* Main Content */
@@ -121,48 +174,52 @@
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: var(--kakao-primary);
+  box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.1);
 }
 
 .submit-btn {
   padding: 15px 30px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--kakao-gradient);
   color: white;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 1.2em;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 5px 15px rgba(255, 87, 34, 0.3);
 }
 
 .submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 7px 20px rgba(255, 87, 34, 0.4);
+}
+
+.submit-btn:active {
+  transform: translateY(0);
 }
 
 .current-period {
   margin-top: 30px;
   padding: 20px;
-  background: linear-gradient(135deg, #f093fb15, #f5576c15);
-  border-radius: 10px;
-  border: 2px solid #f093fb;
+  background: var(--kakao-gradient-soft);
+  border-radius: 12px;
+  border: 2px solid var(--kakao-primary);
 }
 
 .current-period h4 {
   margin-top: 0;
-  color: #f5576c;
+  color: var(--kakao-primary);
 }
 
 /* 추천 날짜 박스 */
 .recommendation-box {
   margin: 25px 0;
   padding: 25px;
-  background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
-  border-radius: 12px;
-  border: 3px solid #00bcd4;
+  background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+  border-radius: 15px;
+  border: 3px solid var(--kakao-secondary);
   animation: slideIn 0.4s ease;
 }
 
@@ -179,7 +236,7 @@
 
 .recommendation-box h4 {
   margin: 0 0 12px 0;
-  color: #00838f;
+  color: var(--kakao-primary);
   font-size: 1.4em;
   display: flex;
   align-items: center;
@@ -188,11 +245,11 @@
 
 .recommendation-reason {
   margin: 0 0 20px 0;
-  color: #00695c;
+  color: #E65100;
   font-size: 1em;
   line-height: 1.6;
   padding: 12px;
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.7);
   border-radius: 8px;
 }
 
@@ -215,7 +272,7 @@
 
 .recommendation-label {
   font-weight: 700;
-  color: #00838f;
+  color: var(--kakao-primary);
   min-width: 60px;
   font-size: 1.05em;
 }
@@ -229,21 +286,20 @@
 .apply-recommendation-btn {
   width: 100%;
   padding: 12px 20px;
-  background: linear-gradient(135deg, #00bcd4 0%, #00838f 100%);
+  background: var(--kakao-gradient);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 1.1em;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 87, 34, 0.3);
 }
 
 .apply-recommendation-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 188, 212, 0.4);
-  background: linear-gradient(135deg, #00acc1 0%, #00796b 100%);
+  box-shadow: 0 6px 16px rgba(255, 87, 34, 0.4);
 }
 
 .apply-recommendation-btn:active {
@@ -297,16 +353,16 @@
 }
 
 .car-card:hover {
-  border-color: #667eea;
+  border-color: var(--kakao-primary);
   transform: translateY(-3px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+  box-shadow: 0 5px 15px rgba(255, 87, 34, 0.2);
 }
 
 .car-card.selected {
-  border-color: #667eea;
-  background: linear-gradient(135deg, #667eea15, #764ba215);
+  border-color: var(--kakao-primary);
+  background: var(--kakao-gradient-soft);
   transform: translateY(-3px);
-  box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 5px 20px rgba(255, 87, 34, 0.3);
 }
 
 .car-icon {
@@ -332,16 +388,16 @@
 }
 
 .slot-card:hover {
-  border-color: #667eea;
+  border-color: var(--kakao-primary);
   transform: translateY(-3px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+  box-shadow: 0 5px 15px rgba(255, 87, 34, 0.2);
 }
 
 .slot-card.selected {
-  border-color: #667eea;
-  background: linear-gradient(135deg, #667eea15, #764ba215);
+  border-color: var(--kakao-primary);
+  background: var(--kakao-gradient-soft);
   transform: translateY(-3px);
-  box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 5px 20px rgba(255, 87, 34, 0.3);
 }
 
 .slot-name {
@@ -413,25 +469,25 @@
 }
 
 .filter-btn:hover {
-  border-color: #667eea;
-  background: #f8f9ff;
+  border-color: var(--kakao-primary);
+  background: #FFF3E0;
 }
 
 .filter-btn.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--kakao-gradient);
   color: white;
-  border-color: #667eea;
+  border-color: var(--kakao-primary);
 }
 
 .filter-hint {
   margin: 10px 0 0 0;
   font-size: 0.9em;
-  color: #667eea;
+  color: var(--kakao-primary);
   font-weight: 500;
   padding: 8px 12px;
-  background: rgba(102, 126, 234, 0.1);
+  background: var(--kakao-gradient-soft);
   border-radius: 6px;
-  border-left: 3px solid #667eea;
+  border-left: 3px solid var(--kakao-primary);
 }
 
 /* 월별 캘린더 컨테이너 */
@@ -452,12 +508,12 @@
   text-align: center;
   margin-bottom: 20px;
   padding-bottom: 15px;
-  border-bottom: 3px solid #667eea;
+  border-bottom: 3px solid var(--kakao-primary);
 }
 
 .month-header h3 {
   margin: 0;
-  color: #667eea;
+  color: var(--kakao-primary);
   font-size: 1.8em;
   font-weight: 700;
 }
@@ -475,7 +531,7 @@
 
 /* 요일 헤더 */
 .day-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--kakao-gradient);
   color: white;
   padding: 12px;
   text-align: center;
@@ -503,10 +559,10 @@
 }
 
 .calendar-day:hover {
-  background: #f8f9ff;
+  background: #FFF3E0;
   transform: scale(1.02);
   z-index: 10;
-  box-shadow: 0 3px 10px rgba(102, 126, 234, 0.2);
+  box-shadow: 0 3px 10px rgba(255, 87, 34, 0.2);
 }
 
 .calendar-day.other-month {
@@ -545,6 +601,13 @@
   cursor: not-allowed;
   pointer-events: none;
   border: 1px dashed #ccc;
+}
+
+/* 클릭 가능한 시작일은 other-slot보다 우선순위 높음 */
+.calendar-day.start-date.clickable {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  opacity: 1 !important;
 }
 
 .calendar-day.other-slot .day-number {
@@ -651,15 +714,43 @@
   flex-grow: 1;
 }
 
-.competition-badge {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  color: white;
-  padding: 4px 10px;
+/* 신청자 수 배지 - 경쟁 레벨별 */
+.applicant-count {
+  padding: 5px 12px;
   border-radius: 12px;
-  font-size: 0.85em;
+  font-size: 0.9em;
   font-weight: 700;
   text-align: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+/* 높은 경쟁 (5명 이상) - 빨간색 */
+.applicant-count.high-competition {
+  background: linear-gradient(135deg, #FF6B6B 0%, #EE5A6F 100%);
+  color: white;
+  animation: pulse-high 2s infinite;
+}
+
+@keyframes pulse-high {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* 중간 경쟁 (3-4명) - 주황색 */
+.applicant-count.medium-competition {
+  background: linear-gradient(135deg, #FFA500 0%, #FF8C00 100%);
+  color: white;
+}
+
+/* 낮은 경쟁 (1-2명) - 초록색 */
+.applicant-count.low-competition {
+  background: linear-gradient(135deg, #4CAF50 0%, #45A049 100%);
+  color: white;
 }
 
 .applicants-preview {
@@ -671,19 +762,20 @@
 
 .applicant-mini {
   background: white;
-  padding: 3px 8px;
+  padding: 4px 10px;
   border-radius: 6px;
   font-size: 0.8em;
   font-weight: 600;
-  color: #333;
+  color: var(--kakao-primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  text-align: center;
 }
 
 .more-applicants {
-  background: #667eea;
+  background: var(--kakao-primary);
   color: white;
   padding: 3px 8px;
   border-radius: 6px;
@@ -718,6 +810,43 @@
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.legend-competition {
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(255, 87, 34, 0.05);
+  border-radius: 10px;
+  border-left: 4px solid var(--kakao-primary);
+}
+
+.legend-competition h5 {
+  margin: 0 0 10px 0;
+  color: var(--kakao-primary);
+  font-size: 1.1em;
+}
+
+.legend-badge {
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 0.85em;
+  font-weight: 700;
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.legend-badge.high {
+  background: linear-gradient(135deg, #FF6B6B 0%, #EE5A6F 100%);
+}
+
+.legend-badge.medium {
+  background: linear-gradient(135deg, #FFA500 0%, #FF8C00 100%);
+}
+
+.legend-badge.low {
+  background: linear-gradient(135deg, #4CAF50 0%, #45A049 100%);
 }
 
 .legend-box {
@@ -893,11 +1022,11 @@
 
 /* Info Section */
 .info-section {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: var(--kakao-gradient);
   padding: 30px;
   border-radius: 15px;
   color: white;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 20px rgba(255, 87, 34, 0.3);
 }
 
 .info-section h3 {
@@ -932,19 +1061,31 @@
   font-weight: 700;
 }
 
-/* 클릭 가능한 날짜 */
+/* 클릭 가능한 날짜 - 최우선 */
 .calendar-day.clickable {
-  cursor: pointer;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  opacity: 1 !important;
 }
 
 .calendar-day.clickable:hover {
   transform: scale(1.05);
   z-index: 100;
-  box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 5px 20px rgba(255, 87, 34, 0.4);
+}
+
+/* 클릭 가능한 시작일은 모든 제약 무시 */
+.calendar-day.start-date.clickable,
+.calendar-day.clickable.start-date {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  opacity: 1 !important;
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ff9a9e 100%) !important;
+  border: 2px solid #ff6b6b !important;
 }
 
 .click-hint {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--kakao-gradient);
   color: white;
   padding: 6px 10px;
   border-radius: 8px;
@@ -1016,7 +1157,7 @@
   align-items: center;
   padding: 25px 30px;
   border-bottom: 2px solid #e0e0e0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--kakao-gradient);
   color: white;
   border-radius: 20px 20px 0 0;
 }
@@ -1053,11 +1194,36 @@
 }
 
 .modal-info {
-  background: linear-gradient(135deg, #ffecd215, #fcb69f15);
+  background: var(--kakao-gradient-soft);
   padding: 20px;
   border-radius: 12px;
   margin-bottom: 25px;
-  border: 2px solid #ffecd2;
+  border: 2px solid var(--kakao-secondary);
+}
+
+.modal-info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 12px 0;
+  padding: 12px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.info-label {
+  font-weight: 700;
+  color: var(--kakao-primary);
+  min-width: 80px;
+  font-size: 1em;
+}
+
+.info-value {
+  font-size: 1em;
+  color: #333;
+  font-weight: 600;
+  text-align: right;
 }
 
 .modal-info p {
@@ -1067,7 +1233,7 @@
 }
 
 .modal-info strong {
-  color: #667eea;
+  color: var(--kakao-primary);
   font-weight: 700;
 }
 
@@ -1095,8 +1261,8 @@
 
 .modal-body .form-group input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: var(--kakao-primary);
+  box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.1);
 }
 
 .modal-actions {
@@ -1127,14 +1293,14 @@
 }
 
 .modal-actions .submit-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--kakao-gradient);
   color: white;
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 5px 15px rgba(255, 87, 34, 0.3);
 }
 
 .modal-actions .submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 7px 20px rgba(255, 87, 34, 0.4);
 }
 
 @media (max-width: 768px) {
@@ -1158,3 +1324,76 @@
 
 
 
+/* 반응형 디자인 추가 개선 */
+@media (max-width: 480px) {
+  .header-text h1 {
+    font-size: 1.4em;
+  }
+  .nav-buttons {
+    gap: 10px;
+  }
+  .nav-btn {
+    padding: 8px 16px;
+    font-size: 0.9em;
+  }
+  .filter-btn {
+    padding: 8px 15px;
+    font-size: 0.9em;
+  }
+}
+/* 접근성 개선 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--kakao-primary);
+  outline-offset: 2px;
+}
+/* 애니메이션 최적화 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+/* 로딩 스피너 */
+.loading-spinner {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--kakao-light);
+  border-top-color: var(--kakao-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+/* 스크롤바 커스터마이징 */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track {
+  background: var(--kakao-light);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--kakao-gray);
+  border-radius: 10px;
+  border: 3px solid var(--kakao-light);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--kakao-primary);
+}

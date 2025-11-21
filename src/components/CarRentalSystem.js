@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './CarRentalSystem.css';
 
 const CarRentalSystem = () => {
@@ -29,8 +32,30 @@ const CarRentalSystem = () => {
   const [selectedSlotView, setSelectedSlotView] = useState('slot1');
 
   const cars = [
-    { id: 'porsche', name: '포르쉐 타이칸 4S', image: '🏎️' },
-    { id: 'benz', name: '벤츠 EQS 450+', image: '🚗' }
+    {
+      id: 'porsche',
+      name: '포르쉐 타이칸 4S',
+      image: '🏎️',
+      specs: {
+        type: '전기차',
+        range: '407km',
+        seats: '4인승',
+        transmission: '자동'
+      },
+      color: '#FF6B6B'
+    },
+    {
+      id: 'benz',
+      name: '벤츠 EQS 450+',
+      image: '🚗',
+      specs: {
+        type: '전기차',
+        range: '625km',
+        seats: '5인승',
+        transmission: '자동'
+      },
+      color: '#4ECDC4'
+    }
   ];
 
   // 로컬 스토리지에서 데이터 불러오기
@@ -101,12 +126,12 @@ const CarRentalSystem = () => {
     e.preventDefault();
 
     if (!startDate || !endDate) {
-      alert('시작 날짜와 종료 날짜를 모두 입력해주세요.');
+      toast.error('시작 날짜와 종료 날짜를 모두 입력해주세요.');
       return;
     }
 
     if (new Date(startDate) > new Date(endDate)) {
-      alert('종료 날짜는 시작 날짜보다 이후여야 합니다.');
+      toast.error('종료 날짜는 시작 날짜보다 이후여야 합니다.');
       return;
     }
 
@@ -116,8 +141,8 @@ const CarRentalSystem = () => {
       createdAt: new Date().toISOString()
     });
 
-    alert('대여 기간이 설정되었습니다!');
-    setMode('user');
+    toast.success('대여 기간이 설정되었습니다!');
+    setMode('calendar');
   };
 
   // 달력 날짜 클릭 핸들러
@@ -145,7 +170,7 @@ const CarRentalSystem = () => {
     e.preventDefault();
 
     if (!koreanName || !englishId) {
-      alert('이름과 아이디를 입력해주세요.');
+      toast.error('이름과 아이디를 입력해주세요.');
       return;
     }
 
@@ -158,7 +183,7 @@ const CarRentalSystem = () => {
     );
 
     if (duplicate) {
-      alert('이미 해당 차량과 시간대에 신청하셨습니다.');
+      toast.warning('이미 해당 차량과 시간대에 신청하셨습니다.');
       return;
     }
 
@@ -175,7 +200,7 @@ const CarRentalSystem = () => {
     };
 
     setApplications([...applications, newApplication]);
-    alert('신청이 완료되었습니다!');
+    toast.success('신청이 완료되었습니다! 🎉');
     handleCloseModal();
   };
 
@@ -416,14 +441,15 @@ const CarRentalSystem = () => {
   // 특정 날짜의 주차 ID 가져오기
   const getWeekIdForDate = (year, month, date) => {
     const targetDate = new Date(year, month, date);
-    const weeks = getWeeksInPeriod();
 
-    for (const week of weeks) {
-      if (targetDate >= week.startDate && targetDate <= week.endDate) {
-        return week.id;
-      }
+    // 기간 내에 있는지 먼저 확인
+    if (!isDateInPeriod(year, month, date)) {
+      return null;
     }
-    return null;
+
+    // 주차 번호 계산
+    const weekNum = getWeekNumber(targetDate);
+    return `${targetDate.getFullYear()}-W${weekNum}`;
   };
 
   // 관리자 설정 기간 내의 날짜인지 확인
@@ -460,6 +486,11 @@ const CarRentalSystem = () => {
     if (!rentalPeriod) return false;
 
     const startDate = new Date(year, month, date);
+    const debugInfo = {
+      startDate: `${year}/${month+1}/${date}`,
+      slotId,
+      checks: []
+    };
 
     if (slotId === 'slot1') {
       // 1회차: 월화수목 (4일) 모두 포함되어야 함
@@ -468,11 +499,21 @@ const CarRentalSystem = () => {
         const checkDate = new Date(startDate);
         checkDate.setDate(startDate.getDate() + i);
 
+        const inPeriod = isDateInPeriod(checkDate.getFullYear(), checkDate.getMonth(), checkDate.getDate());
+        debugInfo.checks.push({
+          day: i,
+          date: `${checkDate.getFullYear()}/${checkDate.getMonth()+1}/${checkDate.getDate()}`,
+          dayOfWeek: ['일','월','화','수','목','금','토'][checkDate.getDay()],
+          inPeriod
+        });
+
         // 각 날짜가 기간 내에 있는지 확인
-        if (!isDateInPeriod(checkDate.getFullYear(), checkDate.getMonth(), checkDate.getDate())) {
+        if (!inPeriod) {
+          console.log('❌ 1회차 불완전:', debugInfo);
           return false;
         }
       }
+      console.log('✅ 1회차 완전:', debugInfo);
       return true;
     } else {
       // 2회차: 금토일월 (4일) 모두 포함되어야 함
@@ -481,8 +522,16 @@ const CarRentalSystem = () => {
         const checkDate = new Date(startDate);
         checkDate.setDate(startDate.getDate() + i);
 
+        const inPeriod = isDateInPeriod(checkDate.getFullYear(), checkDate.getMonth(), checkDate.getDate());
+        debugInfo.checks.push({
+          day: i,
+          date: `${checkDate.getFullYear()}/${checkDate.getMonth()+1}/${checkDate.getDate()}`,
+          dayOfWeek: ['일','월','화','수','목','금','토'][checkDate.getDay()],
+          inPeriod
+        });
+
         // 각 날짜가 기간 내에 있는지 확인
-        if (!isDateInPeriod(checkDate.getFullYear(), checkDate.getMonth(), checkDate.getDate())) {
+        if (!inPeriod) {
           return false;
         }
       }
@@ -496,10 +545,18 @@ const CarRentalSystem = () => {
     return d.getDay() === 4; // 목요일
   };
 
-  // 특정 날짜가 2회차 종료일인지 확인 (월요일)
+  // 특정 날짜가 2회차 종료일인지 확인 (월요일이면서 3일 전이 금요일)
   const isSlot2EndDate = (year, month, date) => {
     const d = new Date(year, month, date);
-    return d.getDay() === 1; // 월요일
+    if (d.getDay() !== 1) return false; // 월요일이 아니면 false
+
+    // 3일 전 날짜 확인
+    const threeDaysBefore = new Date(d);
+    threeDaysBefore.setDate(d.getDate() - 3);
+
+    // 3일 전이 금요일이고 기간 내에 있으면 2회차 종료일
+    return threeDaysBefore.getDay() === 5 &&
+           isDateInPeriod(threeDaysBefore.getFullYear(), threeDaysBefore.getMonth(), threeDaysBefore.getDate());
   };
 
   // 특정 날짜가 선택된 회차의 기간 내에 있는지 확인
@@ -512,7 +569,12 @@ const CarRentalSystem = () => {
       return dayOfWeek >= 1 && dayOfWeek <= 4;
     } else {
       // 2회차: 금(5) ~ 일(0) + 월(1)
-      return dayOfWeek === 5 || dayOfWeek === 6 || dayOfWeek === 0 || dayOfWeek === 1;
+      // 단, 월요일은 2회차 종료일인 경우만 (3일 전이 금요일)
+      if (dayOfWeek === 1) {
+        // 월요일인 경우 3일 전이 금요일인지 확인
+        return isSlot2EndDate(year, month, date);
+      }
+      return dayOfWeek === 5 || dayOfWeek === 6 || dayOfWeek === 0;
     }
   };
 
@@ -684,7 +746,15 @@ const CarRentalSystem = () => {
                     const isInSlotRange = isInSlotPeriod(day.year, day.month, day.date, selectedSlotView) && !isStartDate && !isEndDate;
 
                     // 선택되지 않은 회차의 시작일인지 (비활성화용)
-                    const isOtherSlotStart = selectedSlotView === 'slot1' ? isSlot2Start : isSlot1Start;
+                    // 단순화: 1회차 선택 시 금요일만, 2회차 선택 시 (2회차 종료일이 아닌) 월요일만
+                    let isOtherSlotStart = false;
+                    if (selectedSlotView === 'slot1') {
+                      // 1회차 선택: 금요일만 비활성화
+                      isOtherSlotStart = isSlot2Start;
+                    } else {
+                      // 2회차 선택: 월요일 중에서 2회차 종료일이 아닌 것만 비활성화
+                      isOtherSlotStart = isSlot1Start && !isSlot2End;
+                    }
 
                     const applicants = weekId
                       ? getApplicants(weekId, selectedSlotView, selectedCarView)
@@ -699,6 +769,22 @@ const CarRentalSystem = () => {
                     // 클릭 가능: 선택된 회차의 시작일이고, 기간 내이고, 현재 달이고, 회차가 완전한 경우만
                     const isClickable = isStartDate && weekId && day.isCurrentMonth && isInPeriod && isComplete;
 
+                    // 디버깅: 월요일이거나 금요일인 경우 상세 정보 출력
+                    if ((isSlot1Start || isSlot2Start) && day.isCurrentMonth) {
+                      console.log(`🔍 디버깅 [${selectedSlotView}] - ${day.year}/${day.month+1}/${day.date} (${['일','월','화','수','목','금','토'][dayOfWeek]}):`, {
+                        선택회차: selectedSlotView,
+                        월요일: isSlot1Start,
+                        금요일: isSlot2Start,
+                        시작일인식: isStartDate,
+                        주차ID: weekId,
+                        기간내: isInPeriod,
+                        완전회차: isComplete,
+                        회차2종료일: isSlot2End,
+                        다른회차시작일: isOtherSlotStart,
+                        클릭가능: isClickable
+                      });
+                    }
+
                     // 다른 날짜 비활성화 (시작일, 종료일, 기간 내가 아닌 경우)
                     const isInactive = isInPeriod && day.isCurrentMonth && !isStartDate && !isEndDate && !isInSlotRange;
 
@@ -709,16 +795,25 @@ const CarRentalSystem = () => {
                           ${!day.isCurrentMonth ? 'other-month' : ''} 
                           ${!isInPeriod ? 'out-of-period' : ''} 
                           ${isWeekend ? 'weekend' : ''} 
+                          ${isOtherSlotStart && isInPeriod && !isClickable ? 'other-slot' : ''}
                           ${isStartDate && isInPeriod && isComplete ? 'start-date' : ''} 
                           ${isStartDate && isInPeriod && !isComplete ? 'incomplete-slot' : ''}
                           ${isEndDate && isInPeriod && isCompleteEnd ? 'end-date' : ''}
                           ${isInSlotRange && isInPeriod ? 'in-range' : ''}
                           ${isClickable ? 'clickable' : ''} 
-                          ${isInactive ? 'inactive-date' : ''}
-                          ${isOtherSlotStart && isInPeriod ? 'other-slot' : ''}`}
+                          ${isInactive ? 'inactive-date' : ''}`}
                         onClick={() => {
+                          console.log('🖱️ 클릭 이벤트 발생!', {
+                            날짜: `${day.year}/${day.month+1}/${day.date}`,
+                            isClickable,
+                            weekId,
+                            회차: selectedSlotView
+                          });
                           if (isClickable) {
+                            console.log('✅ 모달 열기 시도...');
                             handleDateClick(weekId, selectedSlotView, selectedCarView, new Date(day.year, day.month, day.date));
+                          } else {
+                            console.warn('❌ 클릭 불가 - isClickable이 false입니다');
                           }
                         }}
                       >
@@ -734,11 +829,19 @@ const CarRentalSystem = () => {
                           <div className="day-content">
                             {applicants.length > 0 ? (
                               <>
-                                <div className="competition-badge">{rate}:1</div>
+                                <div className={`applicant-count ${
+                                  applicants.length >= 5 ? 'high-competition' : 
+                                  applicants.length >= 3 ? 'medium-competition' : 
+                                  'low-competition'
+                                }`}>
+                                  {applicants.length >= 5 ? '🔥' :
+                                   applicants.length >= 3 ? '⚡' :
+                                   '✨'} {applicants.length}명
+                                </div>
                                 <div className="applicants-preview">
-                                  {applicants.slice(0, 3).map((app, i) => (
+                                  {applicants.slice(0, 3).map((app) => (
                                     <div key={app.id} className="applicant-mini">
-                                      {app.koreanName}
+                                      {app.englishId}
                                     </div>
                                   ))}
                                   {applicants.length > 3 && (
@@ -787,10 +890,27 @@ const CarRentalSystem = () => {
               <span>불완전한 회차 (회색)</span>
             </div>
           </div>
+          <div className="legend-competition">
+            <h5>🎯 신청자 수 표시</h5>
+            <div className="legend-items">
+              <div className="legend-item">
+                <span className="legend-badge high">🔥 5명 이상</span>
+                <span>높은 경쟁 (빨강)</span>
+              </div>
+              <div className="legend-item">
+                <span className="legend-badge medium">⚡ 3-4명</span>
+                <span>중간 경쟁 (주황)</span>
+              </div>
+              <div className="legend-item">
+                <span className="legend-badge low">✨ 1-2명</span>
+                <span>낮은 경쟁 (초록)</span>
+              </div>
+            </div>
+          </div>
           <p className="legend-note">
             * <strong>1회차</strong>: 월화수목 4일 모두 포함되어야 신청 가능<br/>
             * <strong>2회차</strong>: 금토일월 4일 모두 포함되어야 신청 가능<br/>
-            * 불완전한 회차는 회색 처리되며 신청할 수 없습니다
+            * <strong>선발</strong>: 각 시간대당 1명만 선발됩니다
           </p>
         </div>
       </div>
@@ -799,20 +919,39 @@ const CarRentalSystem = () => {
 
   return (
     <div className="car-rental-container">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+
       <header className="header">
-        <h1>🚗 회사 차량 대여 시스템</h1>
+        <div className="logo-section">
+          <div className="kakao-logo">🚕</div>
+          <div className="header-text">
+            <h1>카카오모빌리티</h1>
+            <p className="header-subtitle">차량 대여 시스템</p>
+          </div>
+        </div>
         <div className="nav-buttons">
           <button
             className={`nav-btn ${mode === 'admin' ? 'active' : ''}`}
             onClick={() => setMode('admin')}
           >
-            🔐 관리자
+            ⚙️ 관리자
           </button>
           <button
             className={`nav-btn ${mode === 'calendar' ? 'active' : ''}`}
             onClick={() => setMode('calendar')}
           >
-            📅 달력 보기
+            📅 대여 신청
           </button>
         </div>
       </header>
@@ -823,56 +962,80 @@ const CarRentalSystem = () => {
       </div>
 
       {/* 신청 모달 */}
-      {showModal && (
-        <div className="modal-overlay" onClick={handleCloseModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>🚗 차량 신청하기</h2>
-              <button className="modal-close" onClick={handleCloseModal}>×</button>
-            </div>
-
-            <div className="modal-body">
-              <div className="modal-info">
-                <p><strong>차량:</strong> {cars.find(c => c.id === modalCarId)?.image} {cars.find(c => c.id === modalCarId)?.name}</p>
-                <p><strong>회차:</strong> {modalSlotId === 'slot1' ? '1회차 (월 18:00 ~ 목 18:00)' : '2회차 (금 10:00 ~ 월 10:00)'}</p>
-                <p><strong>날짜:</strong> {selectedDate ? new Date(selectedDate).toLocaleDateString('ko-KR') : ''}</p>
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            className="modal-overlay"
+            onClick={handleCloseModal}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="modal-content"
+              onClick={(e) => e.stopPropagation()}
+              initial={{ scale: 0.8, y: 50 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.8, y: 50 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            >
+              <div className="modal-header">
+                <h2>🚗 차량 신청하기</h2>
+                <button className="modal-close" onClick={handleCloseModal}>×</button>
               </div>
 
-              <form onSubmit={handleSubmitFromModal}>
-                <div className="form-group">
-                  <label>한글 이름 *</label>
-                  <input
-                    type="text"
-                    value={koreanName}
-                    onChange={(e) => setKoreanName(e.target.value)}
-                    placeholder="홍길동"
-                    required
-                    autoFocus
-                  />
+              <div className="modal-body">
+                <div className="modal-info">
+                  <div className="modal-info-item">
+                    <span className="info-label">차량</span>
+                    <span className="info-value">{cars.find(c => c.id === modalCarId)?.image} {cars.find(c => c.id === modalCarId)?.name}</span>
+                  </div>
+                  <div className="modal-info-item">
+                    <span className="info-label">회차</span>
+                    <span className="info-value">{modalSlotId === 'slot1' ? '1회차 (월 18:00 ~ 목 18:00)' : '2회차 (금 10:00 ~ 월 10:00)'}</span>
+                  </div>
+                  <div className="modal-info-item">
+                    <span className="info-label">날짜</span>
+                    <span className="info-value">{selectedDate ? new Date(selectedDate).toLocaleDateString('ko-KR') : ''}</span>
+                  </div>
                 </div>
-                <div className="form-group">
-                  <label>영어 아이디 *</label>
-                  <input
-                    type="text"
-                    value={englishId}
-                    onChange={(e) => setEnglishId(e.target.value)}
-                    placeholder="hong.gildong"
-                    required
-                  />
-                </div>
-                <div className="modal-actions">
-                  <button type="button" className="cancel-btn" onClick={handleCloseModal}>
-                    취소
-                  </button>
-                  <button type="submit" className="submit-btn">
-                    신청하기
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
+
+                <form onSubmit={handleSubmitFromModal}>
+                  <div className="form-group">
+                    <label>한글 이름 *</label>
+                    <input
+                      type="text"
+                      value={koreanName}
+                      onChange={(e) => setKoreanName(e.target.value)}
+                      placeholder="홍길동"
+                      required
+                      autoFocus
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>영어 아이디 *</label>
+                    <input
+                      type="text"
+                      value={englishId}
+                      onChange={(e) => setEnglishId(e.target.value)}
+                      placeholder="hong.gildong"
+                      required
+                    />
+                  </div>
+                  <div className="modal-actions">
+                    <button type="button" className="cancel-btn" onClick={handleCloseModal}>
+                      취소
+                    </button>
+                    <button type="submit" className="submit-btn">
+                      신청하기
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="info-section">
         <h3>📋 이용 안내</h3>
