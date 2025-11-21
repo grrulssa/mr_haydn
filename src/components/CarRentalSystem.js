@@ -367,61 +367,6 @@ const CarRentalSystem = () => {
   );
 
 
-  // 달력용 월별 데이터 생성
-  const getMonthsInPeriod = () => {
-    if (!rentalPeriod) return [];
-
-    const start = new Date(rentalPeriod.startDate);
-    const end = new Date(rentalPeriod.endDate);
-
-    // 시작일과 종료일이 같은 달인지 확인
-    const isSameMonth = start.getFullYear() === end.getFullYear() &&
-                        start.getMonth() === end.getMonth();
-
-    // 같은 달이면 해당 달만 반환
-    if (isSameMonth) {
-      return [{
-        year: start.getFullYear(),
-        month: start.getMonth(),
-        key: `${start.getFullYear()}-${start.getMonth()}`
-      }];
-    }
-
-    // 다른 달이지만, 시작 달의 달력에 종료일이 포함되는지 확인
-    // 달력은 6주(42일) 구조이므로, 다음 달 첫 주까지 표시됨
-    const startMonthLastDay = new Date(start.getFullYear(), start.getMonth() + 1, 0);
-    const startMonthLastDayOfWeek = startMonthLastDay.getDay();
-
-    // 시작 달 달력에서 마지막으로 표시되는 다음 달 날짜 계산
-    const daysFromNextMonth = startMonthLastDayOfWeek === 6 ? 0 : (6 - startMonthLastDayOfWeek);
-    const lastVisibleDate = new Date(start.getFullYear(), start.getMonth() + 1, daysFromNextMonth);
-
-    // 종료일이 시작 달 달력에 표시되는 범위 내에 있으면 시작 달만 표시
-    if (end <= lastVisibleDate) {
-      return [{
-        year: start.getFullYear(),
-        month: start.getMonth(),
-        key: `${start.getFullYear()}-${start.getMonth()}`
-      }];
-    }
-
-    // 다른 달이면 모든 달 반환
-    const months = [];
-
-    let current = new Date(start.getFullYear(), start.getMonth(), 1);
-
-    while (current <= end) {
-      months.push({
-        year: current.getFullYear(),
-        month: current.getMonth(),
-        key: `${current.getFullYear()}-${current.getMonth()}`
-      });
-      current.setMonth(current.getMonth() + 1);
-    }
-
-    return months;
-  };
-
   // 특정 월의 캘린더 날짜들 생성
   const getCalendarDays = (year, month) => {
     const firstDay = new Date(year, month, 1);
@@ -569,6 +514,58 @@ const CarRentalSystem = () => {
       // 2회차: 금(5) ~ 일(0) + 월(1)
       return dayOfWeek === 5 || dayOfWeek === 6 || dayOfWeek === 0 || dayOfWeek === 1;
     }
+  };
+
+  // 특정 월에 완전한 회차가 있는지 확인
+  const hasCompleteSlotInMonth = (year, month) => {
+    if (!rentalPeriod) return false;
+
+    // 해당 월의 모든 날짜를 확인
+    const lastDay = new Date(year, month + 1, 0).getDate();
+
+    for (let date = 1; date <= lastDay; date++) {
+      // 1회차 시작일 확인 (월요일)
+      if (isSlot1StartDate(year, month, date)) {
+        if (isCompleteSlot(year, month, date, 'slot1')) {
+          return true;
+        }
+      }
+
+      // 2회차 시작일 확인 (금요일)
+      if (isSlot2StartDate(year, month, date)) {
+        if (isCompleteSlot(year, month, date, 'slot2')) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  };
+
+  // 달력용 월별 데이터 생성
+  const getMonthsInPeriod = () => {
+    if (!rentalPeriod) return [];
+
+    const start = new Date(rentalPeriod.startDate);
+    const end = new Date(rentalPeriod.endDate);
+
+    // 모든 월을 수집
+    const allMonths = [];
+    let current = new Date(start.getFullYear(), start.getMonth(), 1);
+
+    while (current <= end) {
+      allMonths.push({
+        year: current.getFullYear(),
+        month: current.getMonth(),
+        key: `${current.getFullYear()}-${current.getMonth()}`
+      });
+      current.setMonth(current.getMonth() + 1);
+    }
+
+    // 완전한 회차가 있는 월만 필터링
+    return allMonths.filter(({ year, month }) => {
+      return hasCompleteSlotInMonth(year, month);
+    });
   };
 
   // 달력 페이지
