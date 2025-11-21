@@ -1,15 +1,17 @@
 /* 카카오모빌리티 브랜드 컬러 시스템 */
 :root {
-  --kakao-primary: #FF5722;
-  --kakao-primary-dark: #E64A19;
-  --kakao-secondary: #FFC107;
+  --kakao-primary: #FEE500;
+  --kakao-primary-dark: #F5DC00;
+  --kakao-secondary: #FFD900;
   --kakao-dark: #1A1A1A;
-  --kakao-gray: #757575;
-  --kakao-light: #F5F5F5;
-  --kakao-success: #4CAF50;
+  --kakao-gray: #666666;
+  --kakao-light: #F7F7F7;
+  --kakao-success: #00C73C;
   --kakao-white: #FFFFFF;
-  --kakao-gradient: linear-gradient(135deg, #FF5722 0%, #FF9800 100%);
-  --kakao-gradient-soft: linear-gradient(135deg, rgba(255, 87, 34, 0.1) 0%, rgba(255, 152, 0, 0.1) 100%);
+  --kakao-border: #E5E5E5;
+  --kakao-text: #3C3C3C;
+  --kakao-gradient: linear-gradient(135deg, #FEE500 0%, #FFD900 100%);
+  --kakao-gradient-soft: linear-gradient(135deg, rgba(254, 229, 0, 0.08) 0%, rgba(255, 217, 0, 0.08) 100%);
 }
 
 .car-rental-container {
@@ -26,10 +28,11 @@
 .header {
   margin-bottom: 30px;
   padding: 30px;
-  background: var(--kakao-gradient);
-  color: white;
-  border-radius: 20px;
-  box-shadow: 0 10px 40px rgba(255, 87, 34, 0.3);
+  background: var(--kakao-white);
+  color: var(--kakao-text);
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border-bottom: 4px solid var(--kakao-primary);
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -64,14 +67,14 @@
   margin: 0;
   font-size: 2.5em;
   font-weight: 700;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  color: var(--kakao-dark);
 }
 
 .header-subtitle {
   margin: 5px 0 0 0;
   font-size: 1.2em;
   font-weight: 500;
-  opacity: 0.95;
+  color: var(--kakao-gray);
 }
 
 .nav-buttons {
@@ -83,28 +86,26 @@
 
 .nav-btn {
   padding: 12px 30px;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  border-radius: 30px;
+  background: var(--kakao-white);
+  color: var(--kakao-text);
+  border: 2px solid var(--kakao-border);
+  border-radius: 8px;
   font-size: 1.1em;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
 }
 
 .nav-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  border-color: var(--kakao-primary);
+  background: var(--kakao-gradient-soft);
 }
 
 .nav-btn.active {
-  background: white;
-  color: var(--kakao-primary);
-  border-color: white;
-  box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+  background: var(--kakao-primary);
+  color: var(--kakao-dark);
+  border-color: var(--kakao-primary);
+  box-shadow: 0 2px 8px rgba(254, 229, 0, 0.3);
 }
 
 /* Main Content */
@@ -180,20 +181,21 @@
 
 .submit-btn {
   padding: 15px 30px;
-  background: var(--kakao-gradient);
-  color: white;
+  background: var(--kakao-primary);
+  color: var(--kakao-dark);
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
   font-size: 1.2em;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 5px 15px rgba(255, 87, 34, 0.3);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .submit-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 7px 20px rgba(255, 87, 34, 0.4);
+  background: var(--kakao-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .submit-btn:active {
@@ -210,16 +212,16 @@
 
 .current-period h4 {
   margin-top: 0;
-  color: var(--kakao-primary);
+  color: var(--kakao-dark);
 }
 
 /* 추천 날짜 박스 */
 .recommendation-box {
   margin: 25px 0;
   padding: 25px;
-  background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
-  border-radius: 15px;
-  border: 3px solid var(--kakao-secondary);
+  background: var(--kakao-gradient-soft);
+  border-radius: 12px;
+  border: 2px solid var(--kakao-primary);
   animation: slideIn 0.4s ease;
 }
 
@@ -236,7 +238,7 @@
 
 .recommendation-box h4 {
   margin: 0 0 12px 0;
-  color: var(--kakao-primary);
+  color: var(--kakao-dark);
   font-size: 1.4em;
   display: flex;
   align-items: center;
@@ -245,11 +247,11 @@
 
 .recommendation-reason {
   margin: 0 0 20px 0;
-  color: #E65100;
+  color: var(--kakao-gray);
   font-size: 1em;
   line-height: 1.6;
   padding: 12px;
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--kakao-white);
   border-radius: 8px;
 }
 
@@ -272,7 +274,7 @@
 
 .recommendation-label {
   font-weight: 700;
-  color: var(--kakao-primary);
+  color: var(--kakao-dark);
   min-width: 60px;
   font-size: 1.05em;
 }
@@ -286,20 +288,21 @@
 .apply-recommendation-btn {
   width: 100%;
   padding: 12px 20px;
-  background: var(--kakao-gradient);
-  color: white;
+  background: var(--kakao-primary);
+  color: var(--kakao-dark);
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   font-size: 1.1em;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(255, 87, 34, 0.3);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .apply-recommendation-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(255, 87, 34, 0.4);
+  background: var(--kakao-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .apply-recommendation-btn:active {
@@ -507,13 +510,14 @@
 .month-header {
   text-align: center;
   margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 3px solid var(--kakao-primary);
+  padding: 15px 20px;
+  background: var(--kakao-gradient);
+  border-radius: 10px 10px 0 0;
 }
 
 .month-header h3 {
   margin: 0;
-  color: var(--kakao-primary);
+  color: var(--kakao-dark);
   font-size: 1.8em;
   font-weight: 700;
 }
@@ -532,7 +536,7 @@
 /* 요일 헤더 */
 .day-header {
   background: var(--kakao-gradient);
-  color: white;
+  color: var(--kakao-dark);
   padding: 12px;
   text-align: center;
   font-weight: 700;
@@ -540,11 +544,13 @@
 }
 
 .day-header:first-child {
-  color: #ff6b6b;
+  color: #D32F2F;
+  font-weight: 800;
 }
 
 .day-header:last-child {
-  color: #4dabf7;
+  color: #1976D2;
+  font-weight: 800;
 }
 
 /* 날짜 셀 */
@@ -559,10 +565,10 @@
 }
 
 .calendar-day:hover {
-  background: #FFF3E0;
+  background: #FFFEF0;
   transform: scale(1.02);
   z-index: 10;
-  box-shadow: 0 3px 10px rgba(255, 87, 34, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .calendar-day.other-month {
@@ -695,8 +701,8 @@
 }
 
 .calendar-day.start-date {
-  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ff9a9e 100%);
-  border: 2px solid #ff6b6b;
+  background: linear-gradient(135deg, #FFD54F 0%, #FFC107 100%);
+  border: 2px solid #F9A825;
 }
 
 .day-number {
@@ -716,13 +722,13 @@
 
 /* 신청자 수 배지 - 경쟁 레벨별 */
 .applicant-count {
-  padding: 5px 12px;
-  border-radius: 12px;
+  padding: 6px 14px;
+  border-radius: 8px;
   font-size: 0.9em;
   font-weight: 700;
   text-align: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-  margin-bottom: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -731,25 +737,19 @@
 
 /* 높은 경쟁 (5명 이상) - 빨간색 */
 .applicant-count.high-competition {
-  background: linear-gradient(135deg, #FF6B6B 0%, #EE5A6F 100%);
+  background: #FF6B6B;
   color: white;
-  animation: pulse-high 2s infinite;
 }
 
-@keyframes pulse-high {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-}
-
-/* 중간 경쟁 (3-4명) - 주황색 */
+/* 중간 경쟁 (3-4명) - 노란색 */
 .applicant-count.medium-competition {
-  background: linear-gradient(135deg, #FFA500 0%, #FF8C00 100%);
-  color: white;
+  background: var(--kakao-primary);
+  color: var(--kakao-dark);
 }
 
 /* 낮은 경쟁 (1-2명) - 초록색 */
 .applicant-count.low-competition {
-  background: linear-gradient(135deg, #4CAF50 0%, #45A049 100%);
+  background: var(--kakao-success);
   color: white;
 }
 
@@ -766,16 +766,17 @@
   border-radius: 6px;
   font-size: 0.8em;
   font-weight: 600;
-  color: var(--kakao-primary);
+  color: var(--kakao-dark);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: center;
+  border: 1px solid var(--kakao-border);
 }
 
 .more-applicants {
-  background: var(--kakao-primary);
+  background: var(--kakao-gray);
   color: white;
   padding: 3px 8px;
   border-radius: 6px;
@@ -828,7 +829,7 @@
 
 .legend-badge {
   padding: 4px 12px;
-  border-radius: 8px;
+  border-radius: 6px;
   font-size: 0.85em;
   font-weight: 700;
   color: white;
@@ -838,15 +839,16 @@
 }
 
 .legend-badge.high {
-  background: linear-gradient(135deg, #FF6B6B 0%, #EE5A6F 100%);
+  background: #FF6B6B;
 }
 
 .legend-badge.medium {
-  background: linear-gradient(135deg, #FFA500 0%, #FF8C00 100%);
+  background: var(--kakao-primary);
+  color: var(--kakao-dark);
 }
 
 .legend-badge.low {
-  background: linear-gradient(135deg, #4CAF50 0%, #45A049 100%);
+  background: var(--kakao-success);
 }
 
 .legend-box {
@@ -857,8 +859,8 @@
 }
 
 .legend-box.start-date {
-  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ff9a9e 100%);
-  border-color: #ff6b6b;
+  background: linear-gradient(135deg, #FFD54F 0%, #FFC107 100%);
+  border-color: #F9A825;
 }
 
 .legend-box.incomplete {
@@ -1022,43 +1024,164 @@
 
 /* Info Section */
 .info-section {
-  background: var(--kakao-gradient);
+  background: var(--kakao-white);
   padding: 30px;
-  border-radius: 15px;
-  color: white;
-  box-shadow: 0 5px 20px rgba(255, 87, 34, 0.3);
+  border-radius: 12px;
+  color: var(--kakao-text);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid var(--kakao-primary);
 }
 
 .info-section h3 {
   margin-top: 0;
   font-size: 1.6em;
   margin-bottom: 20px;
+  color: var(--kakao-dark);
 }
 
-.info-section ul {
+.info-highlight {
+  background: var(--kakao-gradient-soft);
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  border: 1px solid var(--kakao-border);
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--kakao-border);
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-weight: 700;
+  color: var(--kakao-dark);
+  font-size: 1em;
+}
+
+.info-value {
+  font-weight: 600;
+  color: var(--kakao-gray);
+  text-align: right;
+  font-size: 0.95em;
+}
+
+.info-details {
+  margin-top: 15px;
+  border: 1px solid var(--kakao-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.info-summary {
+  padding: 15px 20px;
+  background: var(--kakao-light);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1.1em;
+  color: var(--kakao-dark);
+  user-select: none;
+  transition: background 0.2s ease;
+  list-style: none;
+}
+
+.info-summary::-webkit-details-marker {
+  display: none;
+}
+
+.info-summary::before {
+  content: '▶';
+  display: inline-block;
+  margin-right: 8px;
+  transition: transform 0.2s ease;
+}
+
+details[open] .info-summary::before {
+  transform: rotate(90deg);
+}
+
+.info-summary:hover {
+  background: var(--kakao-gradient-soft);
+}
+
+.info-content {
+  padding: 20px;
+  background: var(--kakao-white);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.info-section-detail {
+  margin-bottom: 25px;
+}
+
+.info-section-detail:last-child {
+  margin-bottom: 0;
+}
+
+.info-section-detail h4 {
+  margin: 0 0 12px 0;
+  color: var(--kakao-dark);
+  font-size: 1.2em;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--kakao-primary);
+}
+
+.info-section-detail ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.info-section li {
-  padding: 10px 0;
-  padding-left: 30px;
+.info-section-detail li {
+  padding: 10px 0 10px 25px;
   position: relative;
-  font-size: 1.05em;
+  font-size: 0.95em;
   line-height: 1.6;
+  color: var(--kakao-gray);
 }
 
-.info-section li:before {
-  content: "✓";
+.info-section-detail li::before {
+  content: "•";
   position: absolute;
-  left: 0;
+  left: 8px;
   font-weight: bold;
+  color: var(--kakao-primary);
   font-size: 1.3em;
 }
 
-.info-section strong {
+.info-section-detail li.warning {
+  background: #FFF3E0;
+  padding: 12px 12px 12px 25px;
+  border-radius: 6px;
+  color: #E65100;
+  font-weight: 600;
+  margin: 8px 0;
+}
+
+.info-section-detail li.warning::before {
+  color: #FF6B6B;
+}
+
+.info-section-detail strong {
   font-weight: 700;
+  color: var(--kakao-dark);
 }
 
 /* 클릭 가능한 날짜 - 최우선 */
@@ -1071,7 +1194,7 @@
 .calendar-day.clickable:hover {
   transform: scale(1.05);
   z-index: 100;
-  box-shadow: 0 5px 20px rgba(255, 87, 34, 0.4);
+  box-shadow: 0 4px 16px rgba(254, 229, 0, 0.4);
 }
 
 /* 클릭 가능한 시작일은 모든 제약 무시 */
@@ -1080,20 +1203,19 @@
   pointer-events: auto !important;
   cursor: pointer !important;
   opacity: 1 !important;
-  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ff9a9e 100%) !important;
-  border: 2px solid #ff6b6b !important;
+  background: linear-gradient(135deg, #FFD54F 0%, #FFC107 100%) !important;
+  border: 2px solid #F9A825 !important;
 }
 
 .click-hint {
-  background: var(--kakao-gradient);
-  color: white;
+  background: var(--kakao-primary);
+  color: var(--kakao-dark);
   padding: 6px 10px;
-  border-radius: 8px;
+  border-radius: 6px;
   font-size: 0.8em;
-  font-weight: 600;
+  font-weight: 700;
   text-align: center;
   margin-top: 5px;
-  animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
@@ -1156,9 +1278,9 @@
   justify-content: space-between;
   align-items: center;
   padding: 25px 30px;
-  border-bottom: 2px solid #e0e0e0;
-  background: var(--kakao-gradient);
-  color: white;
+  border-bottom: 3px solid var(--kakao-primary);
+  background: var(--kakao-white);
+  color: var(--kakao-dark);
   border-radius: 20px 20px 0 0;
 }
 
@@ -1168,9 +1290,9 @@
 }
 
 .modal-close {
-  background: rgba(255, 255, 255, 0.2);
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  color: white;
+  background: var(--kakao-light);
+  border: 2px solid var(--kakao-border);
+  color: var(--kakao-dark);
   font-size: 2em;
   width: 45px;
   height: 45px;
@@ -1179,14 +1301,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   line-height: 1;
   padding: 0;
 }
 
 .modal-close:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: rotate(90deg);
+  background: var(--kakao-primary);
+  border-color: var(--kakao-primary);
 }
 
 .modal-body {
@@ -1293,14 +1415,15 @@
 }
 
 .modal-actions .submit-btn {
-  background: var(--kakao-gradient);
-  color: white;
-  box-shadow: 0 5px 15px rgba(255, 87, 34, 0.3);
+  background: var(--kakao-primary);
+  color: var(--kakao-dark);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .modal-actions .submit-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 7px 20px rgba(255, 87, 34, 0.4);
+  background: var(--kakao-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 @media (max-width: 768px) {

@@ -27,6 +27,9 @@ const CarRentalSystem = () => {
   // 신청 목록
   const [applications, setApplications] = useState([]);
 
+  // 당첨 이력 관리 (연간 차종별 최대 2회 제한)
+  const [winningHistory, setWinningHistory] = useState([]);
+
   // 달력 뷰 필터
   const [selectedCarView, setSelectedCarView] = useState('porsche');
   const [selectedSlotView, setSelectedSlotView] = useState('slot1');
@@ -62,12 +65,16 @@ const CarRentalSystem = () => {
   useEffect(() => {
     const savedPeriod = localStorage.getItem('rentalPeriod');
     const savedApplications = localStorage.getItem('applications');
+    const savedWinningHistory = localStorage.getItem('winningHistory');
 
     if (savedPeriod) {
       setRentalPeriod(JSON.parse(savedPeriod));
     }
     if (savedApplications) {
       setApplications(JSON.parse(savedApplications));
+    }
+    if (savedWinningHistory) {
+      setWinningHistory(JSON.parse(savedWinningHistory));
     }
   }, []);
 
@@ -81,6 +88,10 @@ const CarRentalSystem = () => {
   useEffect(() => {
     localStorage.setItem('applications', JSON.stringify(applications));
   }, [applications]);
+
+  useEffect(() => {
+    localStorage.setItem('winningHistory', JSON.stringify(winningHistory));
+  }, [winningHistory]);
 
   // 주차 정보 생성
   const getWeeksInPeriod = () => {
@@ -174,6 +185,17 @@ const CarRentalSystem = () => {
       return;
     }
 
+    // 연간 차종별 당첨 제한 체크
+    const winningCheck = checkAnnualWinningLimit(englishId, modalCarId);
+    if (winningCheck.isLimitReached) {
+      const carName = cars.find(c => c.id === modalCarId).name;
+      toast.error(
+        `${carName}은(는) 이미 올해 2회 당첨되셨습니다.\n연간 차종별 최대 2회까지만 당첨 가능합니다. (2025.1.6~2026.1.5)`,
+        { autoClose: 5000 }
+      );
+      return;
+    }
+
     // 중복 신청 확인
     const duplicate = applications.find(
       app => app.englishId === englishId &&
@@ -200,7 +222,18 @@ const CarRentalSystem = () => {
     };
 
     setApplications([...applications, newApplication]);
-    toast.success('신청이 완료되었습니다! 🎉');
+
+    // 신청 성공 시 안내 메시지
+    if (winningCheck.count === 1) {
+      const carName = cars.find(c => c.id === modalCarId).name;
+      toast.success(
+        `신청이 완료되었습니다! 🎉\n${carName}은(는) 올해 1회 더 신청 가능합니다.`,
+        { autoClose: 4000 }
+      );
+    } else {
+      toast.success('신청이 완료되었습니다! 🎉');
+    }
+
     handleCloseModal();
   };
 
@@ -217,6 +250,43 @@ const CarRentalSystem = () => {
     return applications.filter(
       app => app.weekId === weekId && app.slotId === slotId && app.carId === carId
     );
+  };
+
+  // 연간 차종별 당첨 횟수 체크 (2025.1.6 ~ 2026.1.5 기준)
+  const checkAnnualWinningLimit = (englishId, carId) => {
+    const currentYear = 2025; // 기준 년도
+    const annualStart = new Date(2025, 0, 6); // 2025년 1월 6일
+    const annualEnd = new Date(2026, 0, 5);   // 2026년 1월 5일
+
+    // 해당 사용자의 차종별 당첨 이력 조회
+    const userCarWinnings = winningHistory.filter(record =>
+      record.englishId === englishId &&
+      record.carId === carId &&
+      new Date(record.winningDate) >= annualStart &&
+      new Date(record.winningDate) <= annualEnd
+    );
+
+    return {
+      count: userCarWinnings.length,
+      isLimitReached: userCarWinnings.length >= 2,
+      records: userCarWinnings
+    };
+  };
+
+  // 당첨 이력 추가 (관리자가 추첨 완료 후 호출)
+  const addWinningRecord = (englishId, koreanName, carId, carName, date) => {
+    const newRecord = {
+      id: Date.now(),
+      englishId,
+      koreanName,
+      carId,
+      carName,
+      winningDate: date,
+      createdAt: new Date().toISOString()
+    };
+
+    setWinningHistory([...winningHistory, newRecord]);
+    return newRecord;
   };
 
   // 가장 가까운 이전 월요일 또는 금요일 찾기
@@ -382,11 +452,119 @@ const CarRentalSystem = () => {
               {new Date(rentalPeriod.endDate).toLocaleDateString('ko-KR')}
               ({['일', '월', '화', '수', '목', '금', '토'][new Date(rentalPeriod.endDate).getDay()]})
             </p>
-            <p style={{fontSize: '0.9em', color: '#666', marginTop: '10px'}}>
-              디버그: 시작일 {rentalPeriod.startDate} / 종료일 {rentalPeriod.endDate}
-            </p>
           </div>
         )}
+      </div>
+
+      {/* 당첨 이력 관리 */}
+      <div className="admin-card">
+        <h3>🏆 당첨 이력 관리 (연간 차종별 최대 2회)</h3>
+        <p className="admin-description">
+          추첨 완료 후 당첨자를 등록하면 자동으로 차종별 당첨 횟수가 관리됩니다.<br/>
+          <strong>기준 기간:</strong> 2025년 1월 6일 ~ 2026년 1월 5일
+        </p>
+
+        <div className="winning-history-section">
+          <h4>📊 당첨 이력 ({winningHistory.length}건)</h4>
+          {winningHistory.length > 0 ? (
+            <div className="winning-history-list">
+              <table className="winning-table">
+                <thead>
+                  <tr>
+                    <th>날짜</th>
+                    <th>이름</th>
+                    <th>ID</th>
+                    <th>차량</th>
+                    <th>관리</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {winningHistory
+                    .sort((a, b) => new Date(b.winningDate) - new Date(a.winningDate))
+                    .map(record => (
+                      <tr key={record.id}>
+                        <td>{new Date(record.winningDate).toLocaleDateString('ko-KR')}</td>
+                        <td>{record.koreanName}</td>
+                        <td><code>{record.englishId}</code></td>
+                        <td>{record.carName}</td>
+                        <td>
+                          <button
+                            className="delete-btn-small"
+                            onClick={() => {
+                              if (window.confirm('이 당첨 이력을 삭제하시겠습니까?')) {
+                                setWinningHistory(winningHistory.filter(r => r.id !== record.id));
+                                toast.success('당첨 이력이 삭제되었습니다.');
+                              }
+                            }}
+                          >
+                            삭제
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p className="no-data">등록된 당첨 이력이 없습니다.</p>
+          )}
+
+          <details className="add-winning-section">
+            <summary className="add-winning-summary">➕ 당첨자 수동 등록</summary>
+            <form
+              className="add-winning-form"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = {
+                  koreanName: formData.get('koreanName'),
+                  englishId: formData.get('englishId'),
+                  carId: formData.get('carId'),
+                  winningDate: formData.get('winningDate')
+                };
+
+                const carName = cars.find(c => c.id === data.carId)?.name;
+                const check = checkAnnualWinningLimit(data.englishId, data.carId);
+
+                if (check.isLimitReached) {
+                  toast.error(`${data.englishId}님은 ${carName} 차종으로 이미 2회 당첨되었습니다.`);
+                  return;
+                }
+
+                addWinningRecord(data.englishId, data.koreanName, data.carId, carName, data.winningDate);
+                toast.success('당첨 이력이 등록되었습니다!');
+                e.target.reset();
+              }}
+            >
+              <div className="form-row">
+                <div className="form-group">
+                  <label>한글 이름</label>
+                  <input type="text" name="koreanName" placeholder="홍길동" required />
+                </div>
+                <div className="form-group">
+                  <label>영어 ID</label>
+                  <input type="text" name="englishId" placeholder="hong.gildong" required />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>차량</label>
+                  <select name="carId" required>
+                    <option value="">선택</option>
+                    {cars.map(car => (
+                      <option key={car.id} value={car.id}>{car.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>당첨 날짜</label>
+                  <input type="date" name="winningDate" required />
+                </div>
+              </div>
+              <button type="submit" className="submit-btn">등록하기</button>
+            </form>
+          </details>
+        </div>
       </div>
     </div>
   );
@@ -1039,13 +1217,59 @@ const CarRentalSystem = () => {
 
       <div className="info-section">
         <h3>📋 이용 안내</h3>
-        <ul>
-          <li><strong>관리자</strong>: 대여 시작/종료 날짜를 설정합니다</li>
-          <li><strong>달력 클릭</strong>: 원하는 날짜를 클릭하여 바로 신청할 수 있습니다</li>
-          <li><strong>1회차</strong>: 월 18:00 ~ 목 18:00 (월요일 클릭)</li>
-          <li><strong>2회차</strong>: 금 10:00 ~ 월 10:00 (금요일 클릭)</li>
-          <li>차량/회차 필터를 선택 후 해당 시작일을 클릭하세요</li>
-        </ul>
+        <div className="info-highlight">
+          <div className="info-row">
+            <span className="info-label">👥 이용대상</span>
+            <span className="info-value">카카오모빌리티 크루</span>
+          </div>
+          <div className="info-row">
+            <span className="info-label">📅 이용기간</span>
+            <span className="info-value">4일 (1회차: 월 18:00~목 18:00 / 2회차: 금 10:00~월 10:00)</span>
+          </div>
+          <div className="info-row">
+            <span className="info-label">💰 이용료</span>
+            <span className="info-value">회차당 30,000원 (급여공제)</span>
+          </div>
+          <div className="info-row">
+            <span className="info-label">🎲 선정방법</span>
+            <span className="info-value">추첨제 (연간 차종별 최대 2회 당첨)</span>
+          </div>
+        </div>
+
+        <details className="info-details">
+          <summary className="info-summary">📖 상세 이용규정 보기</summary>
+          <div className="info-content">
+            <div className="info-section-detail">
+              <h4>💵 비용 안내</h4>
+              <ul>
+                <li><strong>회사 부담:</strong> 전기 충전비용, 하이패스 요금</li>
+                <li><strong>사용자 부담:</strong> 주차요금, 충전 후 점거수수료, 교통위반 벌금/과태료</li>
+                <li><strong>차량사고:</strong> 수리비 200만원 이상 시 자기부담금 최대 50만원, 200만원 미만은 수리비의 20%, 랩핑비용 100%</li>
+                <li className="warning">⚠️ 충전 후 즉시 출차하지 않으면 고액의 점거수수료가 발생합니다</li>
+              </ul>
+            </div>
+
+            <div className="info-section-detail">
+              <h4>📌 이용 제한</h4>
+              <ul>
+                <li><strong>연간 이용기간:</strong> 2025년 1월 6일 ~ 2026년 1월 5일</li>
+                <li className="warning">⚠️ <strong>차종별 최대 2회까지만 당첨 가능</strong> (예: 포르쉐 2회 당첨 시 해당 연도 내 포르쉐 신청 불가, 벤츠는 가능)</li>
+                <li>당첨 후 8일 이내 취소 시 연간 이용횟수 차감</li>
+                <li>타인 양도 불가 (반납은 경영지원팀에 신청)</li>
+              </ul>
+            </div>
+
+            <div className="info-section-detail">
+              <h4>🚗 운전 자격</h4>
+              <ul>
+                <li><strong>만 24세 이상</strong> 카카오모빌리티 임직원만 운전 가능</li>
+                <li><strong>실제 운전 경력 1년 이상</strong> 권장</li>
+                <li className="warning">⚠️ 임직원 외 동승자 운전 절대 불가 (사고 시 보험 미적용)</li>
+                <li className="warning">⚠️ 안전운전에 자신이 없으면 신청하지 마세요</li>
+              </ul>
+            </div>
+          </div>
+        </details>
       </div>
     </div>
   );
