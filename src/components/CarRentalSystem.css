@@ -485,12 +485,12 @@
 .filter-hint {
   margin: 10px 0 0 0;
   font-size: 0.9em;
-  color: var(--kakao-primary);
+  color: #999999;
   font-weight: 500;
   padding: 8px 12px;
-  background: var(--kakao-gradient-soft);
+  background: #F5F5F5;
   border-radius: 6px;
-  border-left: 3px solid var(--kakao-primary);
+  border-left: 3px solid #CCCCCC;
 }
 
 /* 월별 캘린더 컨테이너 */
