@@ -549,23 +549,25 @@ const CarRentalSystem = () => {
       <div className="admin-card">
         <h3>대여 기간 설정</h3>
         <form onSubmit={handleSetPeriod} className="period-form">
-          <div className="form-group">
-            <label>시작 날짜</label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label>종료 날짜</label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              required
-            />
+          <div className="form-row">
+            <div className="form-group">
+              <label>시작 날짜</label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>종료 날짜</label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                required
+              />
+            </div>
           </div>
 
           {/* 추천 날짜 표시 */}
@@ -646,7 +648,7 @@ const CarRentalSystem = () => {
 
           <div className="form-group">
             <label>추첨 방식 *</label>
-            <div className="radio-group">
+            <div className="radio-group radio-group-horizontal">
               <label className="radio-label">
                 <input
                   type="radio"
