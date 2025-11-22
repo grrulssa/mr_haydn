@@ -1011,21 +1011,22 @@ const CarRentalSystem = () => {
                           <div
                             className="day-content"
                             onClick={() => {
+                              const currentDate = new Date(day.year, day.month, day.date);
                               if (applicants.length > 0) {
                                 // 신청자가 있으면 목록 모달 표시
                                 setApplicantsModalData({
-                                  weekId: week.id,
+                                  weekId: weekId,
                                   slotId: selectedSlotView,
                                   carId: selectedCarView,
                                   carName: cars.find(c => c.id === selectedCarView)?.name,
                                   slotName: selectedSlotView === 'slot1' ? '1회차' : '2회차',
-                                  startDate: slotStartDate,
+                                  startDate: currentDate,
                                   applicants: applicants
                                 });
                                 setShowApplicantsModal(true);
                               } else {
                                 // 신청자가 없으면 신청 모달 열기
-                                handleDateClick(week.id, selectedSlotView, selectedCarView, slotStartDate);
+                                handleDateClick(weekId, selectedSlotView, selectedCarView, currentDate);
                               }
                             }}
                             style={{ cursor: 'pointer' }}
