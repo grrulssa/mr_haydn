@@ -1387,6 +1387,39 @@ details[open] .info-summary::before {
   box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.1);
 }
 
+/* 당첨 상태 정보 표시 */
+.winning-status-info {
+  margin-top: 10px;
+}
+
+.status-message {
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 0.9em;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-message.status-safe {
+  background: #E8F5E9;
+  color: #2E7D32;
+  border: 2px solid #4CAF50;
+}
+
+.status-message.status-warning {
+  background: #FFF8E1;
+  color: #F57F17;
+  border: 2px solid #FFC107;
+}
+
+.status-message.status-danger {
+  background: #FFEBEE;
+  color: #C62828;
+  border: 2px solid #F44336;
+}
+
 .modal-actions {
   display: flex;
   gap: 15px;

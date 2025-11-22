@@ -227,15 +227,18 @@ const CarRentalSystem = () => {
 
     setApplications([...applications, newApplication]);
 
-    // 신청 성공 시 안내 메시지
-    if (winningCheck.count === 1) {
-      const carName = cars.find(c => c.id === modalCarId).name;
+    // 신청 성공 시 안내 메시지 - 당첨 횟수에 따라 안내
+    const carName = cars.find(c => c.id === modalCarId).name;
+    if (winningCheck.count === 0) {
       toast.success(
-        `신청이 완료되었습니다! 🎉\n${carName}은(는) 올해 1회 더 신청 가능합니다.`,
+        `신청이 완료되었습니다! 🎉\n${carName} 차종으로 올해 2회 더 당첨 가능합니다.`,
         { autoClose: 4000 }
       );
-    } else {
-      toast.success('신청이 완료되었습니다! 🎉');
+    } else if (winningCheck.count === 1) {
+      toast.success(
+        `신청이 완료되었습니다! 🎉\n⚠️ ${carName} 차종으로 올해 1회 더 당첨 가능합니다.\n다음 당첨 시 올해는 더 이상 신청할 수 없습니다.`,
+        { autoClose: 5000 }
+      );
     }
 
     handleCloseModal();
@@ -531,12 +534,29 @@ const CarRentalSystem = () => {
                 const check = checkAnnualWinningLimit(data.englishId, data.carId);
 
                 if (check.isLimitReached) {
-                  toast.error(`${data.englishId}님은 ${carName} 차종으로 이미 2회 당첨되었습니다.`);
+                  toast.error(
+                    `❌ 등록 불가\n${data.englishId}님은 ${carName} 차종으로 이미 2회 당첨되었습니다.\n연간 차종별 최대 2회까지만 당첨 가능합니다. (2025.1.6~2026.1.5)`,
+                    { autoClose: 5000 }
+                  );
                   return;
                 }
 
                 addWinningRecord(data.englishId, data.koreanName, data.carId, carName, data.winningDate);
-                toast.success('당첨 이력이 등록되었습니다!');
+
+                // 등록 후 남은 횟수 안내
+                const newCheck = checkAnnualWinningLimit(data.englishId, data.carId);
+                if (newCheck.count === 1) {
+                  toast.success(
+                    `✅ 당첨 이력이 등록되었습니다!\n⚠️ ${data.englishId}님은 ${carName} 차종으로 올해 1회 더 당첨 가능합니다.`,
+                    { autoClose: 4000 }
+                  );
+                } else if (newCheck.count === 2) {
+                  toast.warning(
+                    `✅ 당첨 이력이 등록되었습니다!\n🚫 ${data.englishId}님은 ${carName} 차종으로 올해 더 이상 당첨 불가합니다. (2회 도달)`,
+                    { autoClose: 5000 }
+                  );
+                }
+
                 e.target.reset();
               }}
             >
@@ -1215,6 +1235,33 @@ const CarRentalSystem = () => {
                       placeholder="hong.gildong"
                       required
                     />
+                    {englishId && modalCarId && (
+                      <div className="winning-status-info">
+                        {(() => {
+                          const check = checkAnnualWinningLimit(englishId, modalCarId);
+                          const carName = cars.find(c => c.id === modalCarId)?.name;
+                          if (check.count === 0) {
+                            return (
+                              <div className="status-message status-safe">
+                                ✅ {carName} 차종: 올해 당첨 이력 없음 (2회 신청 가능)
+                              </div>
+                            );
+                          } else if (check.count === 1) {
+                            return (
+                              <div className="status-message status-warning">
+                                ⚠️ {carName} 차종: 올해 1회 당첨 (1회 더 가능)
+                              </div>
+                            );
+                          } else {
+                            return (
+                              <div className="status-message status-danger">
+                                🚫 {carName} 차종: 올해 2회 당첨 (신청 불가)
+                              </div>
+                            );
+                          }
+                        })()}
+                      </div>
+                    )}
                   </div>
                   <div className="modal-actions">
                     <button type="button" className="cancel-btn" onClick={handleCloseModal}>
