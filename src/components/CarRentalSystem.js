@@ -1243,19 +1243,19 @@ const CarRentalSystem = () => {
                           if (check.count === 0) {
                             return (
                               <div className="status-message status-safe">
-                                ✅ {carName} 차종: 올해 당첨 이력 없음 (2회 신청 가능)
+                                ✅ {carName} 차종: 올해 당첨 이력 없음 (최대 2회 당첨 가능)
                               </div>
                             );
                           } else if (check.count === 1) {
                             return (
                               <div className="status-message status-warning">
-                                ⚠️ {carName} 차종: 올해 1회 당첨 (1회 더 가능)
+                                ⚠️ {carName} 차종: 올해 1회 당첨 (1회 더 당첨 가능)
                               </div>
                             );
                           } else {
                             return (
                               <div className="status-message status-danger">
-                                🚫 {carName} 차종: 올해 2회 당첨 (신청 불가)
+                                🚫 {carName} 차종: 올해 2회 당첨 완료 (더 이상 당첨 불가)
                               </div>
                             );
                           }
