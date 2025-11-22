@@ -1520,3 +1520,138 @@ select:focus-visible {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--kakao-primary);
 }
+
+/* 신청자 목록 모달 스타일 */
+.applicants-modal {
+  max-width: 600px;
+}
+
+.applicants-list {
+  margin-top: 20px;
+}
+
+.applicants-list h4 {
+  margin: 0 0 15px 0;
+  color: var(--kakao-dark);
+  font-size: 1.2em;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--kakao-border);
+}
+
+.applicants-table-wrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.applicants-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.applicants-table thead {
+  background: var(--kakao-gradient-soft);
+  border-bottom: 2px solid var(--kakao-primary);
+}
+
+.applicants-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 700;
+  color: var(--kakao-dark);
+  font-size: 0.95em;
+}
+
+.applicants-table tbody tr {
+  border-bottom: 1px solid var(--kakao-border);
+  transition: background 0.2s ease;
+}
+
+.applicants-table tbody tr:hover {
+  background: var(--kakao-gradient-soft);
+}
+
+.applicants-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.applicants-table td {
+  padding: 12px 16px;
+  color: var(--kakao-text);
+  font-size: 0.9em;
+}
+
+.applicants-table td:first-child {
+  font-weight: 700;
+  color: var(--kakao-gray);
+}
+
+.applicants-table code {
+  background: var(--kakao-light);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 0.9em;
+  color: var(--kakao-dark);
+  border: 1px solid var(--kakao-border);
+}
+
+/* 신청자 수 표시 개선 */
+.day-content .applicant-count {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.day-content .applicant-count:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.day-content {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.day-content:hover {
+  opacity: 0.9;
+}
+
+/* 클릭 힌트 개선 */
+.click-hint {
+  padding: 8px 12px;
+  background: var(--kakao-gradient-soft);
+  border: 2px dashed var(--kakao-primary);
+  border-radius: 8px;
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--kakao-dark);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.click-hint:hover {
+  background: var(--kakao-gradient);
+  border-style: solid;
+  transform: scale(1.02);
+}
+
+/* 반응형 - 신청자 목록 모달 */
+@media (max-width: 768px) {
+  .applicants-modal {
+    max-width: 95%;
+  }
+
+  .applicants-table th,
+  .applicants-table td {
+    padding: 8px 10px;
+    font-size: 0.85em;
+  }
+
+  .applicants-table th:first-child,
+  .applicants-table td:first-child {
+    padding: 8px 6px;
+  }
+}
+

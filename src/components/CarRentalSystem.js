@@ -24,6 +24,10 @@ const CarRentalSystem = () => {
   const [modalSlotId, setModalSlotId] = useState('');
   const [modalCarId, setModalCarId] = useState('');
 
+  // 신청자 목록 모달
+  const [showApplicantsModal, setShowApplicantsModal] = useState(false);
+  const [applicantsModalData, setApplicantsModalData] = useState(null);
+
   // 신청 목록
   const [applications, setApplications] = useState([]);
 
@@ -1004,7 +1008,28 @@ const CarRentalSystem = () => {
 
                         {/* 시작일 내용 - 완전한 회차만 표시 */}
                         {isStartDate && isInPeriod && isComplete && (
-                          <div className="day-content">
+                          <div
+                            className="day-content"
+                            onClick={() => {
+                              if (applicants.length > 0) {
+                                // 신청자가 있으면 목록 모달 표시
+                                setApplicantsModalData({
+                                  weekId: week.id,
+                                  slotId: selectedSlotView,
+                                  carId: selectedCarView,
+                                  carName: cars.find(c => c.id === selectedCarView)?.name,
+                                  slotName: selectedSlotView === 'slot1' ? '1회차' : '2회차',
+                                  startDate: slotStartDate,
+                                  applicants: applicants
+                                });
+                                setShowApplicantsModal(true);
+                              } else {
+                                // 신청자가 없으면 신청 모달 열기
+                                handleDateClick(week.id, selectedSlotView, selectedCarView, slotStartDate);
+                              }
+                            }}
+                            style={{ cursor: 'pointer' }}
+                          >
                             {applicants.length > 0 ? (
                               <>
                                 <div className={`applicant-count ${
@@ -1014,17 +1039,7 @@ const CarRentalSystem = () => {
                                 }`}>
                                   {applicants.length >= 5 ? '🔥' :
                                    applicants.length >= 3 ? '⚡' :
-                                   '✨'} {applicants.length}명
-                                </div>
-                                <div className="applicants-preview">
-                                  {applicants.slice(0, 3).map((app) => (
-                                    <div key={app.id} className="applicant-mini">
-                                      {app.englishId}
-                                    </div>
-                                  ))}
-                                  {applicants.length > 3 && (
-                                    <div className="more-applicants">+{applicants.length - 3}</div>
-                                  )}
+                                   '✨'} {applicants.length}명 신청
                                 </div>
                               </>
                             ) : (
@@ -1209,6 +1224,113 @@ const CarRentalSystem = () => {
                     </button>
                   </div>
                 </form>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 신청자 목록 모달 */}
+      <AnimatePresence>
+        {showApplicantsModal && applicantsModalData && (
+          <motion.div
+            className="modal-overlay"
+            onClick={() => setShowApplicantsModal(false)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="modal-content applicants-modal"
+              onClick={(e) => e.stopPropagation()}
+              initial={{ scale: 0.8, y: 50 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.8, y: 50 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            >
+              <div className="modal-header">
+                <h2>📋 신청자 목록</h2>
+                <button className="modal-close" onClick={() => setShowApplicantsModal(false)}>×</button>
+              </div>
+
+              <div className="modal-body">
+                <div className="modal-info">
+                  <div className="modal-info-item">
+                    <span className="info-label">차량</span>
+                    <span className="info-value">
+                      {cars.find(c => c.id === applicantsModalData.carId)?.image} {applicantsModalData.carName}
+                    </span>
+                  </div>
+                  <div className="modal-info-item">
+                    <span className="info-label">회차</span>
+                    <span className="info-value">
+                      {applicantsModalData.slotName} ({applicantsModalData.slotId === 'slot1' ? '월 18:00 ~ 목 18:00' : '금 10:00 ~ 월 10:00'})
+                    </span>
+                  </div>
+                  <div className="modal-info-item">
+                    <span className="info-label">시작일</span>
+                    <span className="info-value">
+                      {new Date(applicantsModalData.startDate).toLocaleDateString('ko-KR')}
+                    </span>
+                  </div>
+                  <div className="modal-info-item">
+                    <span className="info-label">신청 인원</span>
+                    <span className="info-value">
+                      <strong>{applicantsModalData.applicants.length}명</strong>
+                    </span>
+                  </div>
+                </div>
+
+                <div className="applicants-list">
+                  <h4>신청자 명단</h4>
+                  <div className="applicants-table-wrapper">
+                    <table className="applicants-table">
+                      <thead>
+                        <tr>
+                          <th>번호</th>
+                          <th>영어 ID</th>
+                          <th>신청 시간</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {applicantsModalData.applicants
+                          .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+                          .map((app, index) => (
+                            <tr key={app.id}>
+                              <td>{index + 1}</td>
+                              <td><code>{app.englishId}</code></td>
+                              <td>{new Date(app.createdAt).toLocaleString('ko-KR')}</td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div className="modal-actions">
+                  <button
+                    type="button"
+                    className="submit-btn"
+                    onClick={() => {
+                      setShowApplicantsModal(false);
+                      handleDateClick(
+                        applicantsModalData.weekId,
+                        applicantsModalData.slotId,
+                        applicantsModalData.carId,
+                        applicantsModalData.startDate
+                      );
+                    }}
+                  >
+                    나도 신청하기
+                  </button>
+                  <button
+                    type="button"
+                    className="cancel-btn"
+                    onClick={() => setShowApplicantsModal(false)}
+                  >
+                    닫기
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>
