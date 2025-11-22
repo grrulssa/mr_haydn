@@ -1688,3 +1688,321 @@ select:focus-visible {
   }
 }
 
+/* 추첨 설정 스타일 */
+.drawing-form {
+  margin-top: 20px;
+}
+
+.drawing-form .form-group {
+  margin-bottom: 25px;
+}
+
+.drawing-form .form-group label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 700;
+  color: var(--kakao-dark);
+  font-size: 1.05em;
+}
+
+.drawing-form input[type="datetime-local"] {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid var(--kakao-border);
+  border-radius: 8px;
+  font-size: 1em;
+  transition: all 0.3s ease;
+}
+
+.drawing-form input[type="datetime-local"]:focus {
+  outline: none;
+  border-color: var(--kakao-primary);
+  box-shadow: 0 0 0 3px rgba(254, 229, 0, 0.1);
+}
+
+.deadline-info {
+  display: block;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: var(--kakao-gradient-soft);
+  border-left: 3px solid var(--kakao-primary);
+  border-radius: 4px;
+  color: var(--kakao-dark);
+  font-size: 0.9em;
+  font-weight: 600;
+}
+
+/* 라디오 버튼 그룹 */
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.radio-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 15px;
+  background: white;
+  border: 2px solid var(--kakao-border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.radio-label:hover {
+  border-color: var(--kakao-primary);
+  background: var(--kakao-gradient-soft);
+}
+
+.radio-label input[type="radio"] {
+  margin-top: 3px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--kakao-primary);
+}
+
+.radio-label input[type="radio"]:checked + .radio-text {
+  color: var(--kakao-dark);
+}
+
+.radio-label:has(input:checked) {
+  border-color: var(--kakao-primary);
+  background: var(--kakao-gradient-soft);
+  border-width: 3px;
+}
+
+.radio-text {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.radio-text strong {
+  font-size: 1.05em;
+  color: var(--kakao-dark);
+}
+
+/* 수동 추첨 섹션 */
+.manual-drawing-section {
+  margin-top: 20px;
+  padding: 20px;
+  background: var(--kakao-light);
+  border-radius: 10px;
+  border: 2px solid var(--kakao-border);
+}
+
+.deadline-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.deadline-status.past {
+  background: #E8F5E9;
+  color: #2E7D32;
+  border: 2px solid #4CAF50;
+}
+
+.deadline-status.future {
+  background: #FFF8E1;
+  color: #F57F17;
+  border: 2px solid #FFC107;
+}
+
+.status-icon {
+  font-size: 1.5em;
+}
+
+.drawing-btn {
+  width: 100%;
+  padding: 15px 25px;
+  background: var(--kakao-gradient);
+  color: var(--kakao-dark);
+  border: none;
+  border-radius: 10px;
+  font-size: 1.15em;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.drawing-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.drawing-btn:disabled {
+  background: #E0E0E0;
+  color: #999;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* 자동 추첨 정보 */
+.auto-drawing-info {
+  margin-top: 20px;
+}
+
+.info-box {
+  padding: 20px;
+  border-radius: 10px;
+  border: 2px solid;
+}
+
+.info-box.info-auto {
+  background: #E3F2FD;
+  border-color: #2196F3;
+  color: #1565C0;
+}
+
+.info-box strong {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 1.1em;
+}
+
+.info-box p {
+  margin: 0;
+  font-size: 0.95em;
+}
+
+/* 추첨 결과 섹션 */
+.drawing-results-section {
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 3px solid var(--kakao-border);
+}
+
+.drawing-results-section h4 {
+  margin: 0 0 20px 0;
+  color: var(--kakao-dark);
+  font-size: 1.3em;
+}
+
+.results-table-wrapper {
+  overflow-x: auto;
+  border-radius: 10px;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.results-table thead {
+  background: var(--kakao-gradient);
+  border-bottom: 3px solid var(--kakao-primary-dark);
+}
+
+.results-table th {
+  padding: 15px;
+  text-align: left;
+  font-weight: 700;
+  color: var(--kakao-dark);
+  font-size: 1em;
+}
+
+.results-table tbody tr {
+  border-bottom: 1px solid var(--kakao-border);
+  transition: background 0.2s ease;
+}
+
+.results-table tbody tr:hover {
+  background: var(--kakao-gradient-soft);
+}
+
+.results-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.results-table td {
+  padding: 15px;
+  color: var(--kakao-text);
+  font-size: 0.95em;
+}
+
+.winner-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.winner-info strong {
+  color: var(--kakao-dark);
+  font-size: 1.05em;
+}
+
+.winner-info small {
+  color: var(--kakao-gray);
+  font-size: 0.9em;
+}
+
+.no-winner {
+  color: #999;
+  font-style: italic;
+}
+
+.applicants-badge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 6px 12px;
+  background: var(--kakao-gradient-soft);
+  border-radius: 6px;
+  font-weight: 600;
+  border: 1px solid var(--kakao-primary);
+}
+
+.applicants-badge small {
+  font-size: 0.85em;
+  color: var(--kakao-gray);
+  font-weight: 500;
+}
+
+.reset-drawing-btn {
+  width: 100%;
+  padding: 12px 20px;
+  background: #FF6B6B;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.reset-drawing-btn:hover {
+  background: #EE5A52;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+/* 반응형 - 추첨 관련 */
+@media (max-width: 768px) {
+  .results-table th,
+  .results-table td {
+    padding: 10px 8px;
+    font-size: 0.85em;
+  }
+
+  .winner-info strong {
+    font-size: 0.95em;
+  }
+
+  .winner-info small {
+    font-size: 0.8em;
+  }
+}
+

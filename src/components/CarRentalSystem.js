@@ -13,6 +13,11 @@ const CarRentalSystem = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
+  // 추첨 설정
+  const [applicationDeadline, setApplicationDeadline] = useState('');
+  const [drawingMethod, setDrawingMethod] = useState('manual'); // 'auto' | 'manual'
+  const [drawingResults, setDrawingResults] = useState([]); // 추첨 결과
+
   // 사용자 신청 (모달용)
   const [koreanName, setKoreanName] = useState('');
   const [englishId, setEnglishId] = useState('');
@@ -70,6 +75,9 @@ const CarRentalSystem = () => {
     const savedPeriod = localStorage.getItem('rentalPeriod');
     const savedApplications = localStorage.getItem('applications');
     const savedWinningHistory = localStorage.getItem('winningHistory');
+    const savedDeadline = localStorage.getItem('applicationDeadline');
+    const savedDrawingMethod = localStorage.getItem('drawingMethod');
+    const savedDrawingResults = localStorage.getItem('drawingResults');
 
     if (savedPeriod) {
       setRentalPeriod(JSON.parse(savedPeriod));
@@ -79,6 +87,15 @@ const CarRentalSystem = () => {
     }
     if (savedWinningHistory) {
       setWinningHistory(JSON.parse(savedWinningHistory));
+    }
+    if (savedDeadline) {
+      setApplicationDeadline(savedDeadline);
+    }
+    if (savedDrawingMethod) {
+      setDrawingMethod(savedDrawingMethod);
+    }
+    if (savedDrawingResults) {
+      setDrawingResults(JSON.parse(savedDrawingResults));
     }
   }, []);
 
@@ -96,6 +113,20 @@ const CarRentalSystem = () => {
   useEffect(() => {
     localStorage.setItem('winningHistory', JSON.stringify(winningHistory));
   }, [winningHistory]);
+
+  useEffect(() => {
+    if (applicationDeadline) {
+      localStorage.setItem('applicationDeadline', applicationDeadline);
+    }
+  }, [applicationDeadline]);
+
+  useEffect(() => {
+    localStorage.setItem('drawingMethod', drawingMethod);
+  }, [drawingMethod]);
+
+  useEffect(() => {
+    localStorage.setItem('drawingResults', JSON.stringify(drawingResults));
+  }, [drawingResults]);
 
   // 주차 정보 생성
   const getWeeksInPeriod = () => {
@@ -187,6 +218,17 @@ const CarRentalSystem = () => {
     if (!koreanName || !englishId) {
       toast.error('이름과 아이디를 입력해주세요.');
       return;
+    }
+
+    // 신청 마감 체크
+    if (applicationDeadline) {
+      const now = new Date();
+      const deadline = new Date(applicationDeadline);
+      if (now > deadline) {
+        toast.error('신청 마감되었습니다. 더 이상 신청할 수 없습니다.', { autoClose: 5000 });
+        handleCloseModal();
+        return;
+      }
     }
 
     // 연간 차종별 당첨 제한 체크
@@ -295,6 +337,122 @@ const CarRentalSystem = () => {
     setWinningHistory([...winningHistory, newRecord]);
     return newRecord;
   };
+
+  // 추첨 실행 함수
+  const performDrawing = () => {
+    // 모든 주차/슬롯/차량 조합별로 추첨
+    const weeks = getWeeksInPeriod();
+    const slots = ['slot1', 'slot2'];
+    const newResults = [];
+
+    weeks.forEach(week => {
+      slots.forEach(slotId => {
+        cars.forEach(car => {
+          const applicants = getApplicants(week.id, slotId, car.id);
+
+          if (applicants.length === 0) return; // 신청자 없으면 스킵
+
+          // 당첨 제한 체크 후 필터링
+          const eligibleApplicants = applicants.filter(app => {
+            const check = checkAnnualWinningLimit(app.englishId, car.id);
+            return !check.isLimitReached;
+          });
+
+          if (eligibleApplicants.length === 0) {
+            // 모두 당첨 제한에 걸린 경우
+            newResults.push({
+              weekId: week.id,
+              slotId,
+              carId: car.id,
+              carName: car.name,
+              slotName: slotId === 'slot1' ? '1회차' : '2회차',
+              weekDisplay: week.display,
+              winner: null,
+              reason: '모든 신청자가 당첨 제한 도달',
+              applicantsCount: applicants.length,
+              createdAt: new Date().toISOString()
+            });
+            return;
+          }
+
+          // 랜덤 추첨
+          const randomIndex = Math.floor(Math.random() * eligibleApplicants.length);
+          const winner = eligibleApplicants[randomIndex];
+
+          newResults.push({
+            weekId: week.id,
+            slotId,
+            carId: car.id,
+            carName: car.name,
+            slotName: slotId === 'slot1' ? '1회차' : '2회차',
+            weekDisplay: week.display,
+            winner: winner,
+            applicantsCount: applicants.length,
+            eligibleCount: eligibleApplicants.length,
+            createdAt: new Date().toISOString()
+          });
+
+          // 당첨 이력에 자동 추가
+          addWinningRecord(
+            winner.englishId,
+            winner.koreanName,
+            car.id,
+            car.name,
+            week.startDate.toISOString()
+          );
+        });
+      });
+    });
+
+    setDrawingResults(newResults);
+    return newResults;
+  };
+
+  // 수동 추첨 버튼 핸들러
+  const handleManualDrawing = () => {
+    if (!applicationDeadline) {
+      toast.error('신청 마감일시를 먼저 설정해주세요.');
+      return;
+    }
+
+    const now = new Date();
+    const deadline = new Date(applicationDeadline);
+
+    if (now < deadline) {
+      toast.warning('아직 신청 마감 시간이 지나지 않았습니다.');
+      return;
+    }
+
+    if (drawingResults.length > 0) {
+      if (!window.confirm('이미 추첨이 완료되었습니다. 다시 추첨하시겠습니까?\n기존 추첨 결과는 유지되지 않습니다.')) {
+        return;
+      }
+    }
+
+    const results = performDrawing();
+    toast.success(`추첨이 완료되었습니다! 총 ${results.length}건의 추첨이 진행되었습니다.`, { autoClose: 5000 });
+  };
+
+  // 자동 추첨 타이머
+  useEffect(() => {
+    if (drawingMethod !== 'auto' || !applicationDeadline || drawingResults.length > 0) {
+      return;
+    }
+
+    const checkAutoDrawing = setInterval(() => {
+      const now = new Date();
+      const deadline = new Date(applicationDeadline);
+
+      if (now >= deadline) {
+        console.log('🎰 자동 추첨 시간 도달!');
+        const results = performDrawing();
+        toast.success(`자동 추첨이 완료되었습니다! 총 ${results.length}건`, { autoClose: 5000 });
+        clearInterval(checkAutoDrawing);
+      }
+    }, 10000); // 10초마다 체크
+
+    return () => clearInterval(checkAutoDrawing);
+  }, [drawingMethod, applicationDeadline, drawingResults, applications, winningHistory]);
 
   // 가장 가까운 이전 월요일 또는 금요일 찾기
   const findPreviousMondayOrFriday = (date) => {
@@ -459,6 +617,167 @@ const CarRentalSystem = () => {
               {new Date(rentalPeriod.endDate).toLocaleDateString('ko-KR')}
               ({['일', '월', '화', '수', '목', '금', '토'][new Date(rentalPeriod.endDate).getDay()]})
             </p>
+          </div>
+        )}
+      </div>
+
+      {/* 추첨 설정 */}
+      <div className="admin-card">
+        <h3>🎲 추첨 설정</h3>
+        <p className="admin-description">
+          신청 마감일시를 설정하고 추첨 방식을 선택하세요.
+        </p>
+
+        <form className="drawing-form" onSubmit={(e) => e.preventDefault()}>
+          <div className="form-group">
+            <label>신청 마감 일시 *</label>
+            <input
+              type="datetime-local"
+              value={applicationDeadline}
+              onChange={(e) => setApplicationDeadline(e.target.value)}
+              required
+            />
+            {applicationDeadline && (
+              <small className="deadline-info">
+                📅 {new Date(applicationDeadline).toLocaleString('ko-KR')} 이후 신청 불가
+              </small>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label>추첨 방식 *</label>
+            <div className="radio-group">
+              <label className="radio-label">
+                <input
+                  type="radio"
+                  name="drawingMethod"
+                  value="auto"
+                  checked={drawingMethod === 'auto'}
+                  onChange={(e) => setDrawingMethod(e.target.value)}
+                />
+                <span className="radio-text">
+                  <strong>자동 추첨</strong> - 마감 시간이 되면 자동으로 추첨
+                </span>
+              </label>
+              <label className="radio-label">
+                <input
+                  type="radio"
+                  name="drawingMethod"
+                  value="manual"
+                  checked={drawingMethod === 'manual'}
+                  onChange={(e) => setDrawingMethod(e.target.value)}
+                />
+                <span className="radio-text">
+                  <strong>수동 추첨</strong> - 관리자가 직접 추첨 버튼 클릭
+                </span>
+              </label>
+            </div>
+          </div>
+
+          {drawingMethod === 'manual' && applicationDeadline && (
+            <div className="manual-drawing-section">
+              {(() => {
+                const now = new Date();
+                const deadline = new Date(applicationDeadline);
+                const isPastDeadline = now >= deadline;
+
+                return (
+                  <>
+                    <div className={`deadline-status ${isPastDeadline ? 'past' : 'future'}`}>
+                      {isPastDeadline ? (
+                        <>
+                          <span className="status-icon">✅</span>
+                          <span>신청 마감됨 - 추첨 가능</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="status-icon">⏰</span>
+                          <span>신청 진행 중 - 마감 후 추첨 가능</span>
+                        </>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      className="drawing-btn"
+                      onClick={handleManualDrawing}
+                      disabled={!isPastDeadline}
+                    >
+                      🎲 수동 추첨 실행
+                    </button>
+                  </>
+                );
+              })()}
+            </div>
+          )}
+
+          {drawingMethod === 'auto' && applicationDeadline && (
+            <div className="auto-drawing-info">
+              <div className="info-box info-auto">
+                <strong>🤖 자동 추첨 활성화됨</strong>
+                <p>
+                  {new Date(applicationDeadline).toLocaleString('ko-KR')}에 자동으로 추첨이 진행됩니다.
+                </p>
+              </div>
+            </div>
+          )}
+        </form>
+
+        {/* 추첨 결과 */}
+        {drawingResults.length > 0 && (
+          <div className="drawing-results-section">
+            <h4>🎉 추첨 결과 ({drawingResults.length}건)</h4>
+            <div className="results-table-wrapper">
+              <table className="results-table">
+                <thead>
+                  <tr>
+                    <th>주차</th>
+                    <th>회차</th>
+                    <th>차량</th>
+                    <th>당첨자</th>
+                    <th>신청자 수</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {drawingResults.map((result, index) => (
+                    <tr key={index}>
+                      <td>{result.weekDisplay}</td>
+                      <td>{result.slotName}</td>
+                      <td>{result.carName}</td>
+                      <td>
+                        {result.winner ? (
+                          <span className="winner-info">
+                            <strong>{result.winner.englishId}</strong>
+                            <small>({result.winner.koreanName})</small>
+                          </span>
+                        ) : (
+                          <span className="no-winner">{result.reason || '당첨자 없음'}</span>
+                        )}
+                      </td>
+                      <td>
+                        <span className="applicants-badge">
+                          {result.applicantsCount}명
+                          {result.eligibleCount && result.eligibleCount !== result.applicantsCount && (
+                            <small> (유효: {result.eligibleCount}명)</small>
+                          )}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <button
+              type="button"
+              className="reset-drawing-btn"
+              onClick={() => {
+                if (window.confirm('추첨 결과를 초기화하시겠습니까?\n당첨 이력은 유지됩니다.')) {
+                  setDrawingResults([]);
+                  toast.success('추첨 결과가 초기화되었습니다.');
+                }
+              }}
+            >
+              🔄 추첨 결과 초기화
+            </button>
           </div>
         )}
       </div>
