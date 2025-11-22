@@ -338,6 +338,14 @@ const CarRentalSystem = () => {
     return newRecord;
   };
 
+  // 특정 주차/회차/차량의 당첨자 찾기
+  const getWinner = (weekId, slotId, carId) => {
+    const result = drawingResults.find(
+      r => r.weekId === weekId && r.slotId === slotId && r.carId === carId
+    );
+    return result?.winner || null;
+  };
+
   // 추첨 실행 함수
   const performDrawing = () => {
     // 모든 주차/슬롯/차량 조합별로 추첨
@@ -1349,45 +1357,60 @@ const CarRentalSystem = () => {
 
                         {/* 시작일 내용 - 완전한 회차만 표시 */}
                         {isStartDate && isInPeriod && isComplete && (
-                          <div
-                            className="day-content"
-                            onClick={() => {
-                              const currentDate = new Date(day.year, day.month, day.date);
-                              if (applicants.length > 0) {
-                                // 신청자가 있으면 목록 모달 표시
-                                setApplicantsModalData({
-                                  weekId: weekId,
-                                  slotId: selectedSlotView,
-                                  carId: selectedCarView,
-                                  carName: cars.find(c => c.id === selectedCarView)?.name,
-                                  slotName: selectedSlotView === 'slot1' ? '1회차' : '2회차',
-                                  startDate: currentDate,
-                                  applicants: applicants
-                                });
-                                setShowApplicantsModal(true);
-                              } else {
-                                // 신청자가 없으면 신청 모달 열기
-                                handleDateClick(weekId, selectedSlotView, selectedCarView, currentDate);
+                          <>
+                            <div
+                              className="day-content"
+                              onClick={() => {
+                                const currentDate = new Date(day.year, day.month, day.date);
+                                if (applicants.length > 0) {
+                                  // 신청자가 있으면 목록 모달 표시
+                                  setApplicantsModalData({
+                                    weekId: weekId,
+                                    slotId: selectedSlotView,
+                                    carId: selectedCarView,
+                                    carName: cars.find(c => c.id === selectedCarView)?.name,
+                                    slotName: selectedSlotView === 'slot1' ? '1회차' : '2회차',
+                                    startDate: currentDate,
+                                    applicants: applicants
+                                  });
+                                  setShowApplicantsModal(true);
+                                } else {
+                                  // 신청자가 없으면 신청 모달 열기
+                                  handleDateClick(weekId, selectedSlotView, selectedCarView, currentDate);
+                                }
+                              }}
+                              style={{ cursor: 'pointer' }}
+                            >
+                              {applicants.length > 0 ? (
+                                <>
+                                  <div className={`applicant-count ${
+                                    applicants.length >= 5 ? 'high-competition' : 
+                                    applicants.length >= 3 ? 'medium-competition' : 
+                                    'low-competition'
+                                  }`}>
+                                    {applicants.length >= 5 ? '🔥' :
+                                     applicants.length >= 3 ? '⚡' :
+                                     '✨'} {applicants.length}명 신청
+                                  </div>
+                                </>
+                              ) : (
+                                <div className="click-hint">클릭하여 신청</div>
+                              )}
+                            </div>
+
+                            {/* 당첨자 표시 */}
+                            {(() => {
+                              const winner = getWinner(weekId, selectedSlotView, selectedCarView);
+                              if (winner) {
+                                return (
+                                  <div className="winner-badge">
+                                    🏆 {winner.englishId}
+                                  </div>
+                                );
                               }
-                            }}
-                            style={{ cursor: 'pointer' }}
-                          >
-                            {applicants.length > 0 ? (
-                              <>
-                                <div className={`applicant-count ${
-                                  applicants.length >= 5 ? 'high-competition' : 
-                                  applicants.length >= 3 ? 'medium-competition' : 
-                                  'low-competition'
-                                }`}>
-                                  {applicants.length >= 5 ? '🔥' :
-                                   applicants.length >= 3 ? '⚡' :
-                                   '✨'} {applicants.length}명 신청
-                                </div>
-                              </>
-                            ) : (
-                              <div className="click-hint">클릭하여 신청</div>
-                            )}
-                          </div>
+                              return null;
+                            })()}
+                          </>
                         )}
 
 

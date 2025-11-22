@@ -1667,6 +1667,30 @@ select:focus-visible {
   transform: scale(1.02);
 }
 
+/* 당첨자 뱃지 */
+.winner-badge {
+  margin-top: 6px;
+  padding: 6px 10px;
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  border: 2px solid #FF8C00;
+  border-radius: 8px;
+  font-size: 0.85em;
+  font-weight: 700;
+  color: #8B4513;
+  text-align: center;
+  box-shadow: 0 3px 8px rgba(255, 215, 0, 0.4);
+  animation: winnerGlow 2s ease-in-out infinite;
+}
+
+@keyframes winnerGlow {
+  0%, 100% {
+    box-shadow: 0 3px 8px rgba(255, 215, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 3px 12px rgba(255, 215, 0, 0.7);
+  }
+}
+
 /* 반응형 - 신청자 목록 모달 */
 @media (max-width: 768px) {
   .applicants-modal {
